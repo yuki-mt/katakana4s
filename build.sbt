@@ -10,4 +10,4 @@ libraryDependencies ++= Seq(
   "com.atilika.kuromoji" % "kuromoji-ipadic" % "0.9.0"
 )
 
-publishTo := Some(Resolver.file("katakana4s",file("."))(Patterns(true, Resolver.mavenStyleBasePattern)))
+publishTo := Some(Resolver.file("katakana4s",file("./docs"))(Patterns(true, Resolver.mavenStyleBasePattern)))
