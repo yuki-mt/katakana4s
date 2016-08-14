@@ -1,6 +1,7 @@
 package com.yukimt.katakana.dictionary
 
 import scala.io.Source
+import java.net.URI
 /**
  * Able to convert strings to Katakana by using dictionary information.
  * Initially, read dictionary information from text files,
@@ -20,25 +21,33 @@ import scala.io.Source
  * *****************************************************
  */
 abstract class Dictionary(userDictionaryPath: Option[String] = None){
-  val dicFilePath = getClass.getResource("/katakana.dic").toURI.toString
-  val unUsedStr = ";:+91qaxsw2"
-  val katakanaSet = ('ァ' to 'ン').toSet
-
+  val dicFilePath = getClass.getResource("/katakana.dic").toURI
+  val unUsedStr = "91qa<xsw2"
+  val katakanaSet = ('ァ' to 'ン').toSet + 'ー'
+  val reSet = katakanaSet ++ (('1' to '9') :+ '$').toSet
+  val rt = Runtime.getRuntime
 
   //read dictionary information from text file
-  def readDictionary(filePath: String) = {
+  protected def readDictionary(filePath: URI) = {
     // convert each line of the file into Index
     val indices = Source.fromFile(filePath).getLines.map{ line =>
-      val (term, reading) = splitLine(line)
-      if(!reading.forall(r => katakanaSet contains r))
-        throw new RuntimeException("reading of dictionary needs to be all Katakana")
-      val letter = getLetter(term)
+      val (tmpTerm, reading) = splitLine(line)
+      val letter = getLetter(tmpTerm)
+      val ex = new RuntimeException(s"reading of dictionary needs to be all Katakana or regular expression. Wrong Part: $line")
+      val term = if(letter == RELetter){
+        if(!reading.forall(r => reSet contains r)) throw ex
+        tmpTerm.drop(1).dropRight(1)
+      } else {
+        if(!reading.forall(r => reSet contains r)) throw ex
+        tmpTerm
+      }
       Index(letter, term, reading)
     }
 
-    //save 1000 liens at one time to prevent OutOfMemorryError
-    indices.grouped(1000).map{ indexGroup =>
+    //save 5000 lines at one time to prevent OutOfMemorryError
+    indices.grouped(5000).foreach{ indexGroup =>
       save(indexGroup.toList.groupBy(_.letter).mapValues(_.map(index => index.term -> index.reading).toMap))
+      rt.gc()
     }
   }
 
@@ -58,24 +67,13 @@ abstract class Dictionary(userDictionaryPath: Option[String] = None){
   protected def getLetter(term: Term): Char = {
     //in the case of Regular Expression
     if(term.length > 1 && term.head == '/' && term.last == '/'){
-      // if regular expression is formed with /^.../, regard the third letter as the first letter
-      if(term.length > 3 && term(1) == '^'){
-        if(isAlphabet(term(2))) term(2)
-        else KanjiLetter
-      }
-      else RELetter
+      RELetter
     } else {
       if(isAlphabet(term.head)) term.head
       else KanjiLetter
     }
   }
   
- 
-  //initially read default and user dictionary
-  readDictionary(dicFilePath)
-  userDictionaryPath.foreach(u => readDictionary(u))
-
-
   /**
    * convert word into Katakana based on the index 
    */
@@ -85,7 +83,7 @@ abstract class Dictionary(userDictionaryPath: Option[String] = None){
         w.replaceAll(i.term, i.reading)
       }
       val splittedWord = replacedWord.foldLeft(Array("")){(acc, c) => 
-        if(isAlphabet(acc.last.last) == isAlphabet(c))
+        if(acc.last.isEmpty || isAlphabet(acc.last.last) == isAlphabet(c))
           acc.dropRight(1) :+ (acc.last + c)
         else
           acc :+ c.toString
@@ -111,5 +109,11 @@ abstract class Dictionary(userDictionaryPath: Option[String] = None){
   protected def getEnglish(letter: Char): Map[Term, Reading]
   
   //save index to some data source (e.g. Redis, memcache, ...)
-  protected def save(index: Map[Char, Map[Term, Reading]]): Unit
+  protected def save(index: Map[Char, Map[Term, Reading]]): Unit = ()
+ 
+  def setup = {
+    //initially read default and user dictionary
+    readDictionary(dicFilePath)
+    userDictionaryPath.foreach(u => readDictionary(new URI(u)))
+  }
 }
