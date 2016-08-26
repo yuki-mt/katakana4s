@@ -1,0 +1,5 @@
+/ball$/,ボール
+knife,ナイフ
+beer,ビール
+you,ユー
+/^al([^aiueo])/,オール$1
