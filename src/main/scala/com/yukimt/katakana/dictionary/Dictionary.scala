@@ -82,12 +82,16 @@ abstract class Dictionary(userDictionaryPath: Option[String] = None){
       val replacedWord:String = getRE.foldLeft(word.toLowerCase){(w, r) =>
         w.replaceAll(r._1, r._2)
       }
+      //split english and others. e.g. "オールtogether" => Array("オール", "together")
       val splittedWord = replacedWord.foldLeft(Array("")){(acc, c) => 
-        if(acc.last.isEmpty || isAlphabet(acc.last.last) == isAlphabet(c))
-          acc.dropRight(1) :+ (acc.last + c)
+        if(acc.last.isEmpty || isAlphabet(acc.last.last) == isAlphabet(c)){
+          acc(acc.size - 1) = acc.last + c
+          acc
+        }
         else
           acc :+ c.toString
       }
+
       splittedWord.map{ w =>
         if(isAlphabet(w.head)) getEnglish(w.head).get(w).getOrElse(w)
         else w

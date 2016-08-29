@@ -9,7 +9,7 @@ trait Alphabet{
    * e.g. (for Roman) "otoshimae" -> "(, o), (t, o), (sh, i), (m ,a), (, e)"
    *      (for English) "player" -> "(p,), (l, ay), (, er)"
    */
-  def decompose(str: String): Seq[Sound]
+  def decompose(str: String): Array[Sound]
 
   /**
    * convert each sound into Katakana letter and combine them
