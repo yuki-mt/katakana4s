@@ -79,8 +79,8 @@ abstract class Dictionary(userDictionaryPath: Option[String] = None){
    */
   def convert(word: String) = {
     if(isAlphabet(word.head)){
-      val replacedWord:String = getRE.foldLeft(word.toLowerCase){(w, i) =>
-        w.replaceAll(i.term, i.reading)
+      val replacedWord:String = getRE.foldLeft(word.toLowerCase){(w, r) =>
+        w.replaceAll(r._1, r._2)
       }
       val splittedWord = replacedWord.foldLeft(Array("")){(acc, c) => 
         if(acc.last.isEmpty || isAlphabet(acc.last.last) == isAlphabet(c))
@@ -93,8 +93,8 @@ abstract class Dictionary(userDictionaryPath: Option[String] = None){
         else w
       }.mkString
     } else {
-      getKanji.foldLeft(word){(w, i) =>
-        w.replaceAll(i.term, i.reading)
+      getKanji.foldLeft(word){(w, k) =>
+        w.replaceAll(k._1, k._2)
       }
     }
   }
@@ -102,14 +102,14 @@ abstract class Dictionary(userDictionaryPath: Option[String] = None){
   protected def isAlphabet(c: Char) = c.toString.toLowerCase.matches("[a-z]")
 
   //get Regular Expressions from saved dictionary information
-  protected def getRE: Seq[Index]
+  protected def getRE: Map[Term, Reading]
   //get Kanji from saved dictionary information
-  protected def getKanji: Seq[Index]
+  protected def getKanji: Map[Term, Reading]
   //get English from saved dictionary information
   protected def getEnglish(letter: Char): Map[Term, Reading]
   
   //save index to some data source (e.g. Redis, memcache, ...)
-  protected def save(index: Map[Char, Map[Term, Reading]]): Unit = ()
+  protected def save(index: Map[Char, Map[Term, Reading]]): Unit
  
   def setup = {
     //initially read default and user dictionary

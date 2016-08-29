@@ -1,7 +1,6 @@
 package com.yukimt.katakana.dictionary
 
 import org.specs2.mutable.Specification
-import org.specs2.mock.Mockito
 import org.mockito.Mockito._
 import java.net.URI
 
@@ -55,8 +54,8 @@ class TestDictionary(userDic:Option[String] = None) extends Dictionary(userDic){
   override def splitLine(line: String) = super.splitLine(line)
   override def getLetter(term: Term) = super.getLetter(term)
   override def isAlphabet(c: Char) = super.isAlphabet(c)
-  override def getRE = Seq(Index('/', "^al([^aiueo])","オール$1"))
-  override def getKanji = Seq(Index('#', "腹痛","ハライタ"))
+  override def getRE = Map("^al([^aiueo])"->"オール$1")
+  override def getKanji = Map("腹痛"->"ハライタ")
   override def getEnglish(letter: Char) = Map("together"->"トゥギャザー", "the"->"ザ")
   override def save(index: Map[Char, Map[Term, Reading]]) = ()
 }
