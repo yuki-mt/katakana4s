@@ -18,18 +18,26 @@ class Converter(tokenizer: Tokenizer, alpha: Alphabet, dic: Option[Dictionary] =
 
   def convert(str: String, mode: ConversionMode = ConversionMode.Space){
     val tokens = tokenizer.tokenize(str)
-    val readings = dic.map{ d => 
-      val conversions = tokens.map{t => 
-        val dicWord = d.convert(t.term)
-        alpha.convert(alpha.decompose(dicWord))
-      }
-      tokens.map(_.reading).zip(conversions).map{
-        case (reading, conversion) =>
+    val conversions = tokens.map{t => 
+      val dicWord = dic.map(_.convert(t.term)).getOrElse(t.term)
+      ConverterUtil.splitWord(dicWord).map{ w =>
+        if(ConverterUtil.isAlphabet(w.head))
+          alpha.convert(alpha.decompose(w))
+      }.mkString
+    }
+    
+    val readings = tokens.map(_.reading).zip(conversions).map{
+      case (reading, conversion) =>
+        val r = 
           if(ConverterUtil.isAllKatakana(conversion)) conversion
           else reading
-      }
-    }.getOrElse(tokens.map(_.reading))
+        if(mode == ConversionMode.EnglishNoSpace && !ConverterUtil.isAllAlphabet(reading)) r + ' '
+        else r
+    }
 
-    readings.mkString(" ")
+    if(mode == ConversionMode.Space)
+      readings.mkString(" ")
+    else
+      readings.mkString.trim
   }
 }
