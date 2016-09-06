@@ -25,7 +25,7 @@ class Converter(tokenizer: Tokenizer, alpha: Alphabet, dic: Option[Dictionary] =
       }
       tokens.map(_.reading).zip(conversions).map{
         case (reading, conversion) =>
-          if(ConverterUtil.isKatakana(conversion)) conversion
+          if(ConverterUtil.isAllKatakana(conversion)) conversion
           else reading
       }
     }.getOrElse(tokens.map(_.reading))

@@ -70,7 +70,7 @@ abstract class Dictionary(userDictionaryPath: Option[String] = None){
     if(term.length > 1 && term.head == '/' && term.last == '/'){
       RELetter
     } else {
-      if(ConverterUtil.isAlphabet(term.head.toString)) term.head
+      if(ConverterUtil.isAlphabet(term.head)) term.head
       else KanjiLetter
     }
   }
@@ -79,11 +79,11 @@ abstract class Dictionary(userDictionaryPath: Option[String] = None){
    * convert word into Katakana based on the index 
    */
   def convert(word: String) = {
-    if(ConverterUtil.isAlphabet(word)){
+    if(ConverterUtil.isAlphabet(word.head)){
       ConverterUtil.splitWord(getRE.foldLeft(word.toLowerCase){(w, r) =>
         w.replaceAll(r._1, r._2)
       }).map{ w =>
-        if(ConverterUtil.isAlphabet(w.head.toString)) getEnglish(w.head).get(w).getOrElse(w)
+        if(ConverterUtil.isAlphabet(w.head)) getEnglish(w.head).get(w).getOrElse(w)
         else w
       }.mkString
     } else {

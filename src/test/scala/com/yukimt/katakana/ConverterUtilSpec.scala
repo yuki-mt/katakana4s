@@ -5,14 +5,14 @@ import org.specs2.mutable.Specification
 class ConveterUtilSpec extends Specification{
   "ConveterUtil" should {
     "is alphabet" in {
-      ConverterUtil.isAlphabet("fewDa") === true
-      ConverterUtil.isAlphabet("aw2") === false
-      ConverterUtil.isAlphabet("ケ") === false
+      ConverterUtil.isAllAlphabet("fewDa") === true
+      ConverterUtil.isAllAlphabet("aw2") === false
+      ConverterUtil.isAllAlphabet("ケ") === false
     }
 
     "is katanaka" in {
-      ConverterUtil.isKatakana("altogether") === false
-      ConverterUtil.isKatakana("イェーイ") === true
+      ConverterUtil.isAllKatakana("altogether") === false
+      ConverterUtil.isAllKatakana("イェーイ") === true
     }
 
     "split word" in {
