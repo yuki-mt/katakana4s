@@ -2,6 +2,7 @@ package com.yukimt.katakana.dictionary
 
 import scala.io.Source
 import java.net.URI
+import com.yukimt.katakana.ConverterUtil
 /**
  * Able to convert strings to Katakana by using dictionary information.
  * Initially, read dictionary information from text files,
@@ -23,8 +24,7 @@ import java.net.URI
 abstract class Dictionary(userDictionaryPath: Option[String] = None){
   val dicFilePath = getClass.getResource("/katakana.dic").toURI
   val unUsedStr = "91qa<xsw2"
-  val katakanaSet = ('ァ' to 'ン').toSet + 'ー'
-  val reSet = katakanaSet ++ (('1' to '9') :+ '$').toSet
+  val reSet = ConverterUtil.katakanaSet ++ (('1' to '9') :+ '$').toSet
   val rt = Runtime.getRuntime
 
   //read dictionary information from text file
@@ -34,13 +34,14 @@ abstract class Dictionary(userDictionaryPath: Option[String] = None){
       val (tmpTerm, reading) = splitLine(line)
       val letter = getLetter(tmpTerm)
       val ex = new RuntimeException(s"reading of dictionary needs to be all Katakana or regular expression. Wrong Part: $line")
-      val term = if(letter == RELetter){
-        if(!reading.forall(r => reSet contains r)) throw ex
-        tmpTerm.drop(1).dropRight(1)
-      } else {
-        if(!reading.forall(r => reSet contains r)) throw ex
-        tmpTerm
-      }
+      val term =
+        if(letter == RELetter){
+          if(!reading.forall(r => reSet contains r)) throw ex
+          tmpTerm.drop(1).dropRight(1)
+        } else {
+          if(!reading.forall(r => reSet contains r)) throw ex
+          tmpTerm
+        }
       Index(letter, term, reading)
     }
 
@@ -69,7 +70,7 @@ abstract class Dictionary(userDictionaryPath: Option[String] = None){
     if(term.length > 1 && term.head == '/' && term.last == '/'){
       RELetter
     } else {
-      if(isAlphabet(term.head)) term.head
+      if(ConverterUtil.isAlphabet(term.head.toString)) term.head
       else KanjiLetter
     }
   }
@@ -78,22 +79,11 @@ abstract class Dictionary(userDictionaryPath: Option[String] = None){
    * convert word into Katakana based on the index 
    */
   def convert(word: String) = {
-    if(isAlphabet(word.head)){
-      val replacedWord:String = getRE.foldLeft(word.toLowerCase){(w, r) =>
+    if(ConverterUtil.isAlphabet(word)){
+      ConverterUtil.splitWord(getRE.foldLeft(word.toLowerCase){(w, r) =>
         w.replaceAll(r._1, r._2)
-      }
-      //split english and others. e.g. "オールtogether" => Array("オール", "together")
-      val splittedWord = replacedWord.foldLeft(Array("")){(acc, c) => 
-        if(acc.last.isEmpty || isAlphabet(acc.last.last) == isAlphabet(c)){
-          acc(acc.size - 1) = acc.last + c
-          acc
-        }
-        else
-          acc :+ c.toString
-      }
-
-      splittedWord.map{ w =>
-        if(isAlphabet(w.head)) getEnglish(w.head).get(w).getOrElse(w)
+      }).map{ w =>
+        if(ConverterUtil.isAlphabet(w.head.toString)) getEnglish(w.head).get(w).getOrElse(w)
         else w
       }.mkString
     } else {
@@ -102,8 +92,6 @@ abstract class Dictionary(userDictionaryPath: Option[String] = None){
       }
     }
   }
-
-  protected def isAlphabet(c: Char) = c.toString.toLowerCase.matches("[a-z]")
 
   //get Regular Expressions from saved dictionary information
   protected def getRE: Map[Term, Reading]

@@ -13,9 +13,10 @@ import alphabet.Alphabet
  * if you do not want to use dictionary to convert strings, leave "dic" None
  */
 class Converter(tokenizer: Tokenizer, alpha: Alphabet, dic: Option[Dictionary] = None){
-  val katakanaSet = ('ァ' to 'ン').toSet
+  //reading dicrionary information
+  dic.foreach(_.setup)
 
-  def convert(str: String){
+  def convert(str: String, mode: ConversionMode = ConversionMode.Space){
     val tokens = tokenizer.tokenize(str)
     val readings = dic.map{ d => 
       val conversions = tokens.map{t => 
@@ -24,15 +25,11 @@ class Converter(tokenizer: Tokenizer, alpha: Alphabet, dic: Option[Dictionary] =
       }
       tokens.map(_.reading).zip(conversions).map{
         case (reading, conversion) =>
-          if(isKatakana(conversion)) conversion
+          if(ConverterUtil.isKatakana(conversion)) conversion
           else reading
       }
     }.getOrElse(tokens.map(_.reading))
 
     readings.mkString(" ")
-  }
-
-  def isKatakana(str: String) = {
-    str.forall(c => katakanaSet contains c)
   }
 }

@@ -7,12 +7,6 @@ import java.net.URI
 class DictionarySpec extends Specification{
   val dic = new TestDictionary
   "Dictionary" should {
-    "is alphabet" in {
-      dic.isAlphabet('c') === true
-      dic.isAlphabet('Z') === true
-      dic.isAlphabet('ケ') === false
-    }
-
     "split line" in {
       dic.splitLine("aLl,オール") === ("all", "オール")
       dic.splitLine("a\\,ll,オール") === ("a,ll", "オール")
@@ -53,7 +47,6 @@ class TestDictionary(userDic:Option[String] = None) extends Dictionary(userDic){
   override def readDictionary(filePath: URI) = super.readDictionary(filePath)
   override def splitLine(line: String) = super.splitLine(line)
   override def getLetter(term: Term) = super.getLetter(term)
-  override def isAlphabet(c: Char) = super.isAlphabet(c)
   override def getRE = Map("^al([^aiueo])"->"オール$1")
   override def getKanji = Map("腹痛"->"ハライタ")
   override def getEnglish(letter: Char) = Map("together"->"トゥギャザー", "the"->"ザ")
