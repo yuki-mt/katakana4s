@@ -17,7 +17,13 @@ class Converter(tokenizer: Tokenizer, alpha: Alphabet, dic: Option[Dictionary] =
   dic.foreach(_.setup)
 
   def convert(str: String, mode: ConversionMode = ConversionMode.Space){
-    val tokens = tokenizer.tokenize(str)
+    //insert space in the case of camel case
+    val tokens = tokenizer.tokenize(str.foldLeft(""){(acc, c) =>
+      if(acc.nonEmpty && Character.isLowerCase(acc.last) && Character.isUpperCase(c))
+        acc + ' ' + c
+      else
+        acc + c
+    })
     val conversions = tokens.map{t => 
       val dicWord = dic.map(_.convert(t.term)).getOrElse(t.term)
       ConverterUtil.splitWord(dicWord).map{ w =>
