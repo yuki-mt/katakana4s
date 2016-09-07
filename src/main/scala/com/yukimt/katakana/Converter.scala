@@ -16,34 +16,51 @@ class Converter(tokenizer: Tokenizer, alpha: Alphabet, dic: Option[Dictionary] =
   //reading dicrionary information
   dic.foreach(_.setup)
 
-  def convert(str: String, mode: ConversionMode = ConversionMode.Space){
-    //insert space in the case of camel case
-    val tokens = tokenizer.tokenize(str.foldLeft(""){(acc, c) =>
-      if(acc.nonEmpty && Character.isLowerCase(acc.last) && Character.isUpperCase(c))
-        acc + ' ' + c
-      else
-        acc + c
-    })
+  def convert(str: String, mode: ConversionMode = ConversionMode.Space) = {
+    val tokens = tokenizer.tokenize(insertCamelSpace(str))
+
     val conversions = tokens.map{t => 
       val dicWord = dic.map(_.convert(t.term)).getOrElse(t.term)
-      ConverterUtil.splitWord(dicWord).map{ w =>
-        if(ConverterUtil.isAlphabet(w.head))
-          alpha.convert(alpha.decompose(w))
-      }.mkString
+      convertAlphabet(dicWord)
     }
     
-    val readings = tokens.map(_.reading).zip(conversions).map{
-      case (reading, conversion) =>
-        val r = 
-          if(ConverterUtil.isAllKatakana(conversion)) conversion
-          else reading
-        if(mode == ConversionMode.EnglishNoSpace && !ConverterUtil.isAllAlphabet(reading)) r + ' '
-        else r
-    }
-
-    if(mode == ConversionMode.Space)
-      readings.mkString(" ")
-    else
-      readings.mkString.trim
+    combineReadings(tokens.map(_.reading), conversions, mode)
   }
+
+  //insert space between English term for camel case
+  protected def insertCamelSpace(str: String) = str.foldLeft(""){(acc, c) =>
+    if(acc.nonEmpty && Character.isLowerCase(acc.last) && Character.isUpperCase(c))
+      acc + ' ' + c
+    else
+      acc + c
+  }
+
+  //call alpha.convert for only alphabet part
+  protected def convertAlphabet(word: String) = ConverterUtil.splitWord(word).map{ w =>
+    if(ConverterUtil.isAlphabet(w.head)) alpha.convert(alpha.decompose(w))
+    else w
+  }.mkString
+
+  protected def combineReadings(readingTokens: Seq[String], conversions: Seq[String], mode: ConversionMode) = readingTokens.zip(conversions).foldLeft(""){(acc, z) =>
+    val readingToken = z._1
+    val conversion = z._2
+    val reading = 
+      if(ConverterUtil.isAllKatakana(conversion)) conversion
+      else readingToken
+
+    mode match {
+      case ConversionMode.Space =>
+        if(acc.isEmpty) reading else acc + ' ' + reading
+      case ConversionMode.EnglishNoSpace =>
+        if(ConverterUtil.isAlphabet(readingToken.head))
+          acc + reading
+        else{
+          if(acc.lastOption.getOrElse('a') == ' ')
+            acc + reading + ' '
+          else
+            acc + ' ' + reading + ' '
+        }
+      case ConversionMode.NoSpace => acc + reading
+    }
+  }.trim
 }
