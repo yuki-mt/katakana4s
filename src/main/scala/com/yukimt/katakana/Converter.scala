@@ -19,15 +19,19 @@ class Converter(tokenizer: Tokenizer, alpha: Alphabet, dic: Option[Dictionary] =
   def convert(str: String, mode: ConversionMode = ConversionMode.Space) = {
     val tokens = tokenizer.tokenize(insertCamelSpace(str))
 
-    val conversions = tokens.map{t => 
+    val conversions = tokens.map{t =>
+      //convert by using dictionary information
       val dicWord = dic.map(_.convert(t.term)).getOrElse(t.term)
+
+      //convert by using alpha
       convertAlphabet(dicWord)
     }
-    
+
     combineReadings(tokens.map(_.reading), conversions, mode)
   }
 
   //insert space between English term for camel case
+  //e.g. "YouAreGenius" -> "You Are Genius"
   protected def insertCamelSpace(str: String) = str.foldLeft(""){(acc, c) =>
     if(acc.nonEmpty && Character.isLowerCase(acc.last) && Character.isUpperCase(c))
       acc + ' ' + c
