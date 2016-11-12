@@ -1,6 +1,6 @@
 package com.yukimt.katakana.alphabet
 
-case class Roman(userConsonants: Option[Map[String, Seq[String]]] = None) extends Alphabet{
+case class Roman(userConsonants: Option[Map[String, Seq[String]]] = None) extends AlphabetConverter{
   val vowels = Set('a', 'i', 'u', 'e', 'o')
 
   val baseConsonants = Map(

@@ -3,7 +3,7 @@ package com.yukimt.katakana.alphabet
 /**
  * convert alphabets to Katakana
  */
-trait Alphabet{
+trait AlphabetConverter{
   /**
    * decompose str to each sound (each sound has consonant and vowel)
    * e.g. (for Roman) "otoshimae" -> "(, o), (t, o), (sh, i), (m ,a), (, e)"

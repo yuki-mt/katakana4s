@@ -2,7 +2,7 @@ package com.yukimt.katakana.dictionary
 
 import scala.io.Source
 import java.net.URI
-import com.yukimt.katakana.ConverterUtil
+import com.yukimt.katakana.ConverterImplicits._
 /**
  * Able to convert strings to Katakana by using dictionary information.
  * Initially, read dictionary information from text files,
@@ -24,7 +24,7 @@ import com.yukimt.katakana.ConverterUtil
 abstract class Dictionary(userDictionaryPath: Option[String] = None){
   val dicFilePath = getClass.getResource("/katakana.dic").toURI
   val unUsedStr = "91qa<xsw2"
-  val reSet = ConverterUtil.katakanaSet ++ (('1' to '9') :+ '$').toSet
+  val reSet = katakanaSet ++ (('1' to '9') :+ '$').toSet
   val rt = Runtime.getRuntime
 
   //read dictionary information from text file
@@ -70,7 +70,7 @@ abstract class Dictionary(userDictionaryPath: Option[String] = None){
     if(term.length > 1 && term.head == '/' && term.last == '/'){
       RELetter
     } else {
-      if(ConverterUtil.isAlphabet(term.head)) term.head
+      if(term.head.isAlphabet) term.head
       else KanjiLetter
     }
   }
@@ -79,11 +79,11 @@ abstract class Dictionary(userDictionaryPath: Option[String] = None){
    * convert word into Katakana based on the index 
    */
   def convert(word: String) = {
-    if(ConverterUtil.isAlphabet(word.head)){
-      ConverterUtil.splitWord(getRE.foldLeft(word.toLowerCase){(w, r) =>
+    if(word.head.isAlphabet){
+      getRE.foldLeft(word.toLowerCase){(w, r) =>
         w.replaceAll(r._1, r._2)
-      }).map{ w =>
-        if(ConverterUtil.isAlphabet(w.head)) getEnglish(w.head).get(w).getOrElse(w)
+      }.toComponents.map{ w =>
+        if(w.head.isAlphabet) getEnglish(w.head).get(w).getOrElse(w)
         else w
       }.mkString
     } else {

@@ -2,8 +2,8 @@ package com.yukimt.katakana
 
 import dictionary.Dictionary
 import tokenizer.Tokenizer
-import alphabet.Alphabet
-
+import alphabet.AlphabetConverter
+import ConverterImplicits._
 /**
  * convert any string into Katakana by using "convert" method
  * (insert space between each term)
@@ -12,7 +12,7 @@ import alphabet.Alphabet
  *
  * if you do not want to use dictionary to convert strings, leave "dic" None
  */
-class Converter(tokenizer: Tokenizer, alpha: Alphabet, dic: Option[Dictionary] = None){
+class Converter(tokenizer: Tokenizer, alpha: AlphabetConverter, dic: Option[Dictionary] = None){
   //reading dicrionary information
   dic.foreach(_.setup)
 
@@ -40,8 +40,8 @@ class Converter(tokenizer: Tokenizer, alpha: Alphabet, dic: Option[Dictionary] =
   }
 
   //call alpha.convert for only alphabet part
-  protected def convertAlphabet(word: String) = ConverterUtil.splitWord(word).map{ w =>
-    if(ConverterUtil.isAlphabet(w.head)) alpha.convert(alpha.decompose(w))
+  protected def convertAlphabet(word: String) = word.toComponents.map{ w =>
+    if(w.head.isAlphabet) alpha.convert(alpha.decompose(w))
     else w
   }.mkString
 
@@ -49,14 +49,14 @@ class Converter(tokenizer: Tokenizer, alpha: Alphabet, dic: Option[Dictionary] =
     val readingToken = z._1
     val conversion = z._2
     val reading = 
-      if(ConverterUtil.isAllKatakana(conversion)) conversion
+      if(conversion.isAllKatakana) conversion
       else readingToken
 
     mode match {
       case ConversionMode.Space =>
         if(acc.isEmpty) reading else acc + ' ' + reading
       case ConversionMode.EnglishNoSpace =>
-        if(ConverterUtil.isAlphabet(readingToken.head))
+        if(readingToken.head.isAlphabet)
           acc + reading
         else{
           if(acc.lastOption.getOrElse('a') == ' ')

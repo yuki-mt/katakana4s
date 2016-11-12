@@ -5,16 +5,16 @@ import org.specs2.mock.Mockito
 import org.mockito.Mockito._
 import dictionary.Dictionary
 import tokenizer._
-import alphabet.{Alphabet, Sound}
+import alphabet.{AlphabetConverter, Sound}
 
 class ConverterSpec extends Specification with Mockito{
   var tok = mock[Tokenizer]
-  var a = mock[Alphabet]
+  var a = mock[AlphabetConverter]
   var d = mock[Dictionary]
   
   def getConverter(hasDictionary: Boolean) = {
     tok = mock[Tokenizer]
-    a = mock[Alphabet]
+    a = mock[AlphabetConverter]
     d = mock[Dictionary]
     tok.tokenize(any[String]) returns {
       Seq(Token("本当", "ホントウ"), Token("football", "football"), Token("is", "is"), Token("最高", "サイコウ"))
@@ -71,7 +71,7 @@ class ConverterSpec extends Specification with Mockito{
   }
 }
 
-class TestConverter(tokenizer: Tokenizer, alpha: Alphabet, dic: Option[Dictionary] = None) extends Converter(tokenizer, alpha, dic){
+class TestConverter(tokenizer: Tokenizer, alpha: AlphabetConverter, dic: Option[Dictionary] = None) extends Converter(tokenizer, alpha, dic){
   override def insertCamelSpace(str: String) = super.insertCamelSpace(str)
   override def convertAlphabet(word: String) = super.convertAlphabet(word)
   override def combineReadings(r: Seq[String], c: Seq[String], m: ConversionMode) = super.combineReadings(r, c, m)
