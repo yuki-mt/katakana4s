@@ -1,20 +1,18 @@
-package com.yukimt.katakana.alphabet
+package com.yukimt.katakana
+package alphabet
 
 case object English extends AlphabetConverter{
   val vowels = Set('a', 'i', 'u', 'e', 'o')
-  val shortVowels = Map('a'->"ア", 'i'->"イ", 'u'->"ウ", 'e'->"エ", 'o'->"オ", 'y'->"イ", 'w'->"ウ")
-  val longVowels = Map('a'->"エー", 'i'->"アイ", 'u'->"ウー", 'e'->"イー", 'o'->"オー", 'y'->"アイ", 'w'->"ウ")
-  val multiVowels = Map("ie"->"イー", "uy"->"アイ", "au"->"オー", "aw"->"オー", "eau"->"ユー", "eu"->"ユー", "io"->"イオ", "ou"->"アウ", "ye"->"イエ", "iew"->"ユー")
 
   val consonants = Map(
-    "b"-> Seq("バ", "ビ", "ブ", "べ", "ボ"),
+    "b" -> EnglishConsonant.Normal(Seq("バ", "ビ", "ブ", "べ", "ボ", "ビュ"), false),
     "c" -> Seq("カ", "キ", "ク", "ケ", "コ"),
-    "d" -> Seq("ダ", "ディ", "デュ", "デ", "ド"),
-    "f" -> Seq("ファ", "フィ", "フ", "フェ", "フォ"),
+    "d" -> EnglishConsonant.Normal(Seq("ダ", "ディ", "デュ", "デ", "ド", "デュ"), true),
+    "f" -> EnglishConsonant.Normal(Seq("ファ", "フィ", "フ", "フェ", "フォ", "フュ"), false),
     "g" -> Seq("ガ", "ギ", "グ", "ゲ", "ゴ"),
-    "h" -> Seq("ハ", "ヒ", "フ", "ヘ", "ホ"),
-    "j" -> Seq("ジャ", "ジ", "ジュ", "ジェ", "ジョ"),
-    "k" -> Seq("カ", "キ", "ク", "ケ", "コ"),
+    "h" -> EnglishConsonant.Normal(Seq("ハ", "ヒ", "フ", "ヘ", "ホ", "ヒュ"), false),
+    "j" -> EnglishConsonant.Normal(Seq("ジャ", "ジ", "ジュ", "ジェ", "ジョ", "ジュ"), false),
+    "k" -> EnglishConsonant.Normal(Seq("カ", "キ", "ク", "ケ", "コ", "キュ"), true),
     "l" -> Seq("ラ", "リ", "ル", "レ", "ロ"),
     "m" -> Seq("マ", "ミ", "ム", "メ", "モ"),
     "n" -> Seq("ナ", "ニ", "ヌ", "ネ", "ノ"),
@@ -64,52 +62,19 @@ case object English extends AlphabetConverter{
   }
 
   def convert(sounds: Seq[Sound]): String = {
-    sounds.zipWithIndex.map{
-      case (sound, index) =>
-        //convert vowel
-        val kVowel = sound.vowel.map{v =>
-          if(v == "e" && index == sounds.size - 1 && sounds.size > 1){
-            //ignore e if sounds end with e and the size of sounds is more than 1
-            getDefaultVowel(sound.consonant)
-          } else if (v.size > 1){
-            if(v == "ie" && index != sounds.size - 1 && sounds(index + 1).consonant.contains("t"))
-              "アイエ"
-            else if(v == "ia" && index != sounds.size - 1 && sounds(index + 1).consonant.contains("l"))
-              "アイア"
-            //oo: ウー bookとかッが入る場合はウ(dはッはいれない)
-            //ou + 子音 + “le”-> 「ア」
-            //ou + ghで終わり> 「ア」
-            //if size of vowel > 1 and contained in multivowels keys, use it
-            //multirvowels + "r" -> longrvowel(remove "ー" if exists) + アー
-            //if size of vowel > 1 and not contained in multivowels keys, use longvowels of the first one
-          } else if (true){
-            //longvowels if vowel + consonant(no overlapped) + [e, or, er, el, le]
-            //longvowels if vowel + ght
-            //longrvowels + "r" -> longrvowel(remove "ー" if exists) + アー
-            //基本複合母音のときは1文字目を英語読みにする。(yはアイ)
-          } else {
-            // use shortvowels
-            // if end with "r" -> アー
-          } 
-        }.getOrElse(getDefaultVowel(sound.consonant))
+    val kVowels: Seq[Katakana] = sounds.zipWithIndex.collect{
+      case (sound, index) if !(sound.consonant.isEmpty && sound.vowel.isEmpty)=>
+        sound.vowel.map{v =>
+          val nexts: (Option[Sound], Option[Sound]) =
+            if (index == sounds.size - 1) (None, None)
+            else if (index == sounds.size - 2) (Some(sounds(index + 1)), None)
+            else (Some(sounds(index + 1)), Some(sounds(index + 2)))
+
+          EnglishVowel.convert(sound.consonant, v, nexts, sounds.size)
+        }.getOrElse(EnglishVowel.getDefaultVowel(sound.consonant.get))
     }
     //get the first katakana in vowel and convert consonant to kantakana
     ""
-  }
-
-  def getDefaultVowel(consonant: Option[String]) = {
-    if(consonant.exists(c => c.endsWith("t") || c.endsWith("d"))) "オ"
-    else if(consonant.contains("ch")) "イ"
-    else "ウ"
-  }
-
-  def vowelToInt(vowel: Char) = vowel match {
-    case 'ア' => 0
-    case 'イ' => 1 
-    case 'ウ' => 2
-    case 'エ' => 3
-    case 'オ' => 4
-    case 'ユ' => 5
   }
 
   def isHeadVowel(str: String) = {
