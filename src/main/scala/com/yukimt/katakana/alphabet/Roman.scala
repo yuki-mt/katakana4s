@@ -1,4 +1,5 @@
-package com.yukimt.katakana.alphabet
+package com.yukimt.katakana
+package alphabet
 
 case class Roman(userConsonants: Option[Map[String, Seq[String]]] = None) extends AlphabetConverter{
   val vowels = Set('a', 'i', 'u', 'e', 'o')
@@ -47,21 +48,21 @@ case class Roman(userConsonants: Option[Map[String, Seq[String]]] = None) extend
   def decompose(str: String): Array[Sound] = {
     str.headOption.map{ c =>
       if(vowels contains c)
-        Sound(None, Some(c.toString)) +: decompose(str.tail)
+        Sound("", c.toString) +: decompose(str.tail)
       else{
         val sounds = decompose(str.tail)
         if(sounds.isEmpty){
           if(c == 'm' || c == 'n')
-            Array(Sound(Some(c.toString), None))
+            Array(Sound(c.toString, ""))
           else
             throw new IllegalArgumentException(s"Roman word needs to finish vowel: $str")
         } else {
-          val consonant = c + sounds.head.consonant.getOrElse("")
+          val consonant = c + sounds.head.consonant
           if((mnSet contains consonant) || (c != 'm' && c != 'n')){
-            sounds(0) = sounds.head.copy(consonant = Some(consonant))
+            sounds(0) = sounds.head.copy(consonant = consonant)
             sounds
           } else {
-            Sound(Some(c.toString), None) +: sounds
+            Sound(c.toString, "") +: sounds
           }
         }
       }
@@ -70,21 +71,21 @@ case class Roman(userConsonants: Option[Map[String, Seq[String]]] = None) extend
 
   def convert(sounds: Seq[Sound]): String = {
     sounds.map{s =>
-      val con = s.consonant.getOrElse("")
-      val (sokuon, consonant) = getSokuon(con)
-      sokuon + s.vowel.map{ v =>
-        consonants.get(consonant).map(seq => seq(vowelToInt(v.head))) match {
+      val (sokuon, con) = getSokuon(s.consonant)
+      val consonant = if(s.vowel.nonEmpty) { 
+        consonants.get(con).map(seq => seq(vowelToInt(s.vowel.head))) match {
           case Some(k) => k
-          case None => throw new IllegalArgumentException(s"the consonant is not in expected: $con")
+          case None => throw new IllegalArgumentException(s"the consonant is not in expected: ${s.consonant}")
         }
-      }.getOrElse{
-        if(consonant == "m" || consonant == "n") "ン"
+      } else {
+        if(con == "m" || con == "n") "ン"
         else throw new IllegalArgumentException(s"Sound needs both consonant and vowel: $s")
       }
+      sokuon + consonant
     }.mkString
   }
 
-  def getSokuon(con: String): (String, String) = {
+  def getSokuon(con: Alphabet): (String, String) = {
     if(con.length > 1 && con.head == con(1)){
       val s = getSokuon(con.tail)
       ("ッ" + s._1, s._2)

@@ -8,21 +8,21 @@ case object English extends AlphabetConverter{
     str.headOption.map{ c =>
       val sounds = decompose(str.tail)
       if(isHeadVowel(str)){
-        if(sounds.isEmpty || sounds.head.consonant.isDefined)
-          Sound(None, Some(c.toString)) +: sounds
+        if(sounds.isEmpty || sounds.head.consonant.nonEmpty)
+          Sound("", c.toString) +: sounds
         else{
-          val newVowel = sounds.head.vowel.map(v => c + v).getOrElse(c.toString)
-          sounds(0) = sounds.head.copy(vowel = Some(newVowel))
+          val newVowel = c + sounds.head.vowel
+          sounds(0) = sounds.head.copy(vowel = newVowel)
           sounds
         }
       } else {
-        val newConsonant = sounds.head.consonant.map(con => c + con).getOrElse(c.toString)
+        val newConsonant = c + sounds.head.consonant
         val isOverlapped = newConsonant.size > 1 && newConsonant.head == newConsonant(1)
         if(EnglishConsonant.consonants.contains(newConsonant) || isOverlapped){
-          sounds(0) = sounds.head.copy(consonant = Some(newConsonant))
+          sounds(0) = sounds.head.copy(consonant = newConsonant)
           sounds
         } else {
-          Sound(Some(c.toString), None) +: sounds
+          Sound(c.toString, "") +: sounds
         }
       }
     }.getOrElse(Array.empty[Sound])
@@ -31,20 +31,23 @@ case object English extends AlphabetConverter{
   def convert(sounds: Seq[Sound]): String = {
     val kVowels: Seq[Katakana] = sounds.zipWithIndex.map{
       case (sound, index) =>
-        sound.vowel.map{v =>
+        if(sound.vowel.isEmpty) ""
+        else {
           val nexts: (Option[Sound], Option[Sound]) =
             if (index == sounds.size - 1) (None, None)
             else if (index == sounds.size - 2) (Some(sounds(index + 1)), None)
             else (Some(sounds(index + 1)), Some(sounds(index + 2)))
 
-          EnglishVowel.convert(sound.consonant, v, nexts, sounds.size)
-        }.getOrElse("")
+          EnglishVowel.convert(sound.consonant, sound.vowel, nexts, sounds.size)
+        }
     }
     sounds.zipWithIndex.map{
       case (sound, index) =>
         val isLast = index == sounds.size - 1
-        sound.consonant.map{ c =>
-          EnglishConsonant.consonants.get(c).getOrElse(c.head.toString) match {
+        if(sound.consonant.isEmpty)
+          kVowels(index)
+        else {
+          EnglishConsonant.consonants.get(sound.consonant).getOrElse(sound.consonant.head.toString) match {
             case c: EnglishConsonant.Normal =>
               c.getKatakana(kVowels(index))
             
@@ -55,7 +58,7 @@ case object English extends AlphabetConverter{
               c.getKatakana(kVowels(index), beforeVowel, isLast)
             
             case EnglishConsonant.G =>
-              EnglishConsonant.G.getKatakana(kVowels(index), sound.vowel.isDefined, isLast)
+              EnglishConsonant.G.getKatakana(kVowels(index), sound.vowel.nonEmpty, isLast)
             
             case EnglishConsonant.M =>
               EnglishConsonant.M.getKatakana(kVowels(index), isLast)
@@ -63,17 +66,17 @@ case object English extends AlphabetConverter{
             case EnglishConsonant.S =>
               val beforeConsonant =
                 if(index == 0) ""
-                else sounds(index - 1).consonant.getOrElse("")
+                else sounds(index - 1).consonant
               EnglishConsonant.S.getKatakana(kVowels(index), isLast, beforeConsonant)
             
             case EnglishConsonant.C =>
-              EnglishConsonant.C.getKatakana(kVowels(index), sound.vowel.getOrElse(""))
+              EnglishConsonant.C.getKatakana(kVowels(index), sound.vowel)
           }
-        }.getOrElse(kVowels(index)) 
+        }
     }.mkString
   }
 
-  def isHeadVowel(str: String) = {
+  def isHeadVowel(str: Alphabet) = {
     str.headOption.exists(_ match {
       case c if vowels contains c =>
         true
