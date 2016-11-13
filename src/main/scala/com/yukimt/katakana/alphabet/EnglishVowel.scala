@@ -17,10 +17,13 @@ object EnglishVowel{
       else {
         val subVowel = vowel.head
         val subKatakana =
-          if (nexts._2.isEmpty && nexts._1.exists(n => n.consonant.size > 1 && n.consonant.distinct.size == 1 && Set("e", "or", "er", "el", "le", "ue").contains(n.vowel))) {
-            //longvowels if vowel + consonant(no overlapped) + [e, or, er, el, le]
+          if (!vowel.endsWith("r") && nexts._2.isEmpty && nexts._1.exists(n => n.consonant.size == 1 && Set("e", "or", "er", "ue").contains(n.vowel))) {
+            //longvowels if vowel + consonant(1 letter) + [e, or, er]
             longVowels(subVowel)
-          } else if (nexts._2.isEmpty && nexts._1.exists(n => n.consonant == "ght" && n.vowel.isEmpty)) {
+          } else if (!vowel.endsWith("r") && nexts._1.exists(n => n.consonant.size == 1 && n.vowel.isEmpty) && nexts._2.contains(Sound("l", "e"))) {
+            //longvowels if vowel + consonant(1 letter) + le
+            longVowels(subVowel)
+          } else if (nexts._2.isEmpty && nexts._1.contains(Sound("ght", ""))) {
             //longvowels if vowel + ght
             longVowels(subVowel)
           } else if (nexts._1.exists(n => (n.consonant == "t" || n.consonant == "s") && n.vowel == "io") && nexts._2.contains(Sound("n", ""))) {
@@ -36,7 +39,7 @@ object EnglishVowel{
         if (vowel endsWith "r") addRSound(subKatakana)
         else subKatakana
       }
-    } else if(vowel == "ie" && nexts._2.isEmpty && nexts._1.exists(_.consonant == "t")){
+    } else if(vowel == "ie" && nexts._2.isEmpty && nexts._1.contains(Sound("t", ""))){
       "アイエ"
     } else if(vowel == "ia" && nexts._2.isEmpty && nexts._1.exists(_.consonant == "l")){
       "アイア"
@@ -54,7 +57,7 @@ object EnglishVowel{
     } else if(multiVowels contains vowel){
       multiVowels(vowel)
     } else if(vowel.endsWith("r") && multiVowels.contains(vowel.dropRight(1))){
-      addRSound(multiVowels(vowel))
+      addRSound(multiVowels(vowel.dropRight(1)))
     } else if(vowel endsWith "r"){
       addRSound(longVowels(vowel.head))
     } else {

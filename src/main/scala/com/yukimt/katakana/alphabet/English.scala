@@ -44,9 +44,19 @@ case object English extends AlphabetConverter{
     sounds.zipWithIndex.map{
       case (sound, index) =>
         val isLast = index == sounds.size - 1
-        if(sound.consonant.isEmpty)
+        val isNextLast = index == sounds.size - 2
+        if(sound.consonant.isEmpty){
           kVowels(index)
-        else {
+        
+        } else if (isNextLast && sound == Sound("m", "") && (sounds(index+1) == Sound("n", "") || sounds(index+1) == Sound("b", ""))){
+          "ム"
+        } else if (isNextLast && sound == Sound("g", "") && sounds(index+1) == Sound("n", "")){
+          "ン"
+        } else if (isLast && sound == Sound("n", "") && sounds(index-1) == Sound("g", "")){
+          ""
+        } else if (isLast && sounds(index-1) == Sound("m", "") && (sound == Sound("n", "") || sound == Sound("b", ""))){
+          ""
+        } else {
           EnglishConsonant.consonants.get(sound.consonant).getOrElse(sound.consonant.head.toString) match {
             case c: EnglishConsonant.Normal =>
               c.getKatakana(kVowels(index))
