@@ -43,9 +43,9 @@ object EnglishConsonant {
     "y" -> Normal(Seq("ヤ", "イ", "ユ", "イェ", "ヨ", "ユ"), "イ"),
     "z" -> Normal(Seq("ザ", "ジ", "ズ", "ゼ", "ゾ", "ジュ"), "ズ"),
     "dg" -> G,
-    "ch" -> Normal(Seq("チャ", "チ", "チュ", "チェ", "チョ", "チュ"), "チ"),
+    "ch" -> Sokuon(Seq("チャ", "チ", "チュ", "チェ", "チョ", "チュ"), "チ"),
     "ck" -> Sokuon(Seq("カ", "キ", "ク", "ケ", "コ", "キュ"), "ク"),
-    "sh" -> Normal(Seq("シャ", "シ", "シュ", "シェ", "ショ", "シュ"), "シュ"),
+    "sh" -> Sokuon(Seq("シャ", "シ", "シュ", "シェ", "ショ", "シュ"), "シュ"),
     "gh" -> Normal(Seq("ガ", "ギ", "グ", "ジェ", "ゴ", "グ"), "フ"),
     "ph" -> Normal(Seq("ファ", "フィ", "フ", "フェ", "フォ", "フュ"), "フ"),
     "ps" -> Normal(Seq("サ", "シ", "ス", "セ", "ソ", "ス"), "プス"),
@@ -118,6 +118,7 @@ object EnglishConsonant {
     
     def getKatakana(kVowel: Katakana, aVowel: Alphabet, beforeVowel: Katakana, isLast: Boolean) = {
       if(aVowel == "io") "ショ"
+      else if(aVowel == "ure") "チャー"
       else if(kVowel.isEmpty && beforeVowel.size == 1 && isLast) "ッ" + default
       else convert(kVowel)
     }

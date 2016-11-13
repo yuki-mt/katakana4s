@@ -6,7 +6,11 @@ object EnglishVowel{
   private val longVowels = Map('a'->"エー", 'i'->"アイ", 'u'->"ユー", 'e'->"イー", 'o'->"オー", 'y'->"アイ", 'w'->"ウ")
   private val multiVowels = Map("ie"->"イー", "uy"->"アイ", "au"->"オー", "aw"->"オー", "eau"->"ユー", "eu"->"ユー", "io"->"イオ", "ou"->"アウ", "ye"->"イエ", "iew"->"ユー", "oo"->"ウー")
 
-  def convert(consonant: Alphabet, vowel: Alphabet, nexts:(Option[Sound], Option[Sound]), size: Int): Katakana = {
+  def convert(consonant: Alphabet, _vowel: Alphabet, nexts:(Option[Sound], Option[Sound]), size: Int): Katakana = {
+    val vowel = if (_vowel.endsWith("re") && nexts._1.isEmpty) {
+      _vowel.dropRight(1)
+    } else _vowel
+
     if((vowel == "e" || vowel == "ue") && nexts._1.isEmpty && size > 1){
       //ignore e if sounds end with e and the size of sounds is more than 1
       if(consonant.isEmpty)
@@ -29,7 +33,7 @@ object EnglishVowel{
           } else if (nexts._1.exists(n => (n.consonant == "t" || n.consonant == "s") && n.vowel == "io") && nexts._2.contains(Sound("n", ""))) {
             //longvowels if vowel + (tion or sion)
             longVowels(subVowel)
-          } else if(nexts._1.isEmpty && vowel.size == 1 && vowel != "y") {
+          } else if(nexts._1.isEmpty && vowel.size == 1 && vowel != "y" && vowel != "a") {
             longVowels(subVowel)
           } else {
             shortVowels(subVowel)
@@ -65,7 +69,9 @@ object EnglishVowel{
   }
 
   private def addRSound(str: Katakana) = {
-    if (str.size == 1) {
+    if (str == "オ") {
+      "オー"
+    } else if (str.size == 1) {
       "アー"
     } else if (str endsWith "ー") {
       str.dropRight(1) + "アー"

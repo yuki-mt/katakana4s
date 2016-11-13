@@ -5,8 +5,16 @@ case object English extends AlphabetConverter{
   val vowels = Set('a', 'i', 'u', 'e', 'o')
 
   def decompose(str: String): Array[Sound] = {
+    val res = _decompose(str)
+    if (res.size > 1 && res.last == Sound("r", "e")) {
+      val temp = res(res.size - 2)
+      res(res.size - 2) = temp.copy(vowel = temp.vowel + "re")
+      res.dropRight(1)
+    } else res
+  }
+  def _decompose(str: String): Array[Sound] = {
     str.headOption.map{ c =>
-      val sounds = decompose(str.tail)
+      val sounds = _decompose(str.tail)
       if(isHeadVowel(str)){
         if(sounds.isEmpty || sounds.head.consonant.nonEmpty)
           Sound("", c.toString) +: sounds
