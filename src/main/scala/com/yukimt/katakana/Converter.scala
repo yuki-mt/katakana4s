@@ -41,7 +41,7 @@ class Converter(tokenizer: Tokenizer, alpha: AlphabetConverter, dic: Option[Dict
 
   //call alpha.convert for only alphabet part
   protected def convertAlphabet(word: String) = word.toComponents.map{ w =>
-    if(w.head.isAlphabet) alpha.convert(alpha.decompose(w))
+    if(w.head.isAlphabet) alpha.convert(alpha.decompose(w.toLowerCase))
     else w
   }.mkString
 
