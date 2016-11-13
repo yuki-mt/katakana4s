@@ -5,11 +5,6 @@ you,ユー
 the,ザ
 soccer,サッカー
 /^any/,エニー
-/^air/,エアー
-/ssion$/,ッション
-/tion$/,ション
-/sion$/,ジョン
-/^air/,エアー
 /^al([^aiueo])/,オール$1
 group,グループ
 soup,スープ
@@ -36,3 +31,5 @@ is,イズ
 are,アー
 were,ワー
 was,ワズ
+sky,スカイ
+service,サービス

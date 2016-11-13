@@ -3,7 +3,7 @@ package alphabet
 
 object EnglishVowel{
   private val shortVowels = Map('a'->"ア", 'i'->"イ", 'u'->"ウ", 'e'->"エ", 'o'->"オ", 'y'->"イ", 'w'->"ウ")
-  private val longVowels = Map('a'->"エー", 'i'->"アイ", 'u'->"ウー", 'e'->"イー", 'o'->"オー", 'y'->"アイ", 'w'->"ウ")
+  private val longVowels = Map('a'->"エー", 'i'->"アイ", 'u'->"ユー", 'e'->"イー", 'o'->"オー", 'y'->"アイ", 'w'->"ウ")
   private val multiVowels = Map("ie"->"イー", "uy"->"アイ", "au"->"オー", "aw"->"オー", "eau"->"ユー", "eu"->"ユー", "io"->"イオ", "ou"->"アウ", "ye"->"イエ", "iew"->"ユー", "oo"->"ウー")
 
   def convert(consonant: Alphabet, vowel: Alphabet, nexts:(Option[Sound], Option[Sound]), size: Int): Katakana = {
@@ -29,8 +29,7 @@ object EnglishVowel{
           } else if (nexts._1.exists(n => (n.consonant == "t" || n.consonant == "s") && n.vowel == "io") && nexts._2.contains(Sound("n", ""))) {
             //longvowels if vowel + (tion or sion)
             longVowels(subVowel)
-          } else if (nexts._1.isEmpty) {
-            //longvowels if end with a single vowel (e.g. sky) 
+          } else if(nexts._1.isEmpty && vowel.size == 1 && vowel != "y") {
             longVowels(subVowel)
           } else {
             shortVowels(subVowel)
