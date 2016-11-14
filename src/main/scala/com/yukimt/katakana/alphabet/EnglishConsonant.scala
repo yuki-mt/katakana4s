@@ -77,8 +77,10 @@ object EnglishConsonant {
     val candidates = Seq("ガ", "ギ", "グ", "ジェ", "ゴ", "グ")
     val default = "グ"
 
-    def getKatakana(kVowel: Katakana, aVowel: Alphabet, isLast: Boolean) = {
-      if(kVowel.isEmpty && aVowel == "e" && isLast){
+    def getKatakana(kVowel: Katakana, aVowel: Alphabet, beforeVowel: Katakana, isLast: Boolean) = {
+      if(kVowel.isEmpty && beforeVowel.size == 1 && isLast){
+        "ッ" + default
+      } else if(kVowel.isEmpty && aVowel == "e" && isLast){
         "ジ"
       } else if (kVowel == "エイ") {
         "ゲイ"
@@ -134,6 +136,8 @@ object EnglishConsonant {
     def getKatakana(kVowel: Katakana, aVowel: Alphabet) = {
       if(kVowel.isEmpty && aVowel.nonEmpty){
         subDefault
+      } else if (aVowel.isEmpty){
+        default
       } else {
         aVowel.head match {
           case 'a' => convert(kVowel)

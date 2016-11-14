@@ -2,7 +2,7 @@ package com.yukimt.katakana
 package alphabet
 
 object EnglishVowel{
-  private val shortVowels = Map('a'->"ア", 'i'->"イ", 'u'->"ウ", 'e'->"エ", 'o'->"オ", 'y'->"イ", 'w'->"ウ")
+  private val shortVowels = Map('a'->"ア", 'i'->"イ", 'u'->"ア", 'e'->"エ", 'o'->"オ", 'y'->"イ", 'w'->"ウ")
   private val longVowels = Map('a'->"エー", 'i'->"アイ", 'u'->"ユー", 'e'->"イー", 'o'->"オー", 'y'->"アイ", 'w'->"ウ")
   private val multiVowels = Map("ie"->"イー", "uy"->"アイ", "au"->"オー", "aw"->"オー", "eau"->"ユー", "eu"->"ユー", "io"->"イオ", "ou"->"アウ", "ye"->"イエ", "iew"->"ユー", "oo"->"ウー")
 

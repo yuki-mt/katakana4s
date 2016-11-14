@@ -83,7 +83,10 @@ case object English extends AlphabetConverter{
               EnglishConsonant.T.getKatakana(kVowels(index), sound.vowel, beforeVowel, isLast)
             
             case EnglishConsonant.G =>
-              EnglishConsonant.G.getKatakana(kVowels(index), sound.vowel, isLast)
+              val beforeVowel =
+                if(index == 0) ""
+                else kVowels(index - 1)
+              EnglishConsonant.G.getKatakana(kVowels(index), sound.vowel, beforeVowel, isLast)
             
             case EnglishConsonant.M =>
               EnglishConsonant.M.getKatakana(kVowels(index), isLast)
