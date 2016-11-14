@@ -80,12 +80,14 @@ abstract class Dictionary(userDictionaryPath: Option[String] = None){
    */
   def convert(word: String) = {
     if(word.head.isAlphabet){
-      getRE.foldLeft(word.toLowerCase){(w, r) =>
-        w.replaceAll(r._1, r._2)
-      }.toComponents.map{ w =>
-        if(w.head.isAlphabet) getEnglish(w.head).get(w).getOrElse(w)
-        else w
-      }.mkString
+      getEnglish(word.head).get(word).getOrElse(
+        getRE.foldLeft(word.toLowerCase){(w, r) =>
+          w.replaceAll(r._1, r._2)
+        }.toComponents.map{ w =>
+          if(w.head.isAlphabet) getEnglish(w.head).get(w).getOrElse(w)
+          else w
+        }.mkString
+      )
     } else {
       getKanji.foldLeft(word){(w, k) =>
         w.replaceAll(k._1, k._2)
