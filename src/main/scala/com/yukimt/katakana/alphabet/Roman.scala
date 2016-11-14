@@ -6,7 +6,7 @@ case class Roman(userConsonants: Option[Map[String, Seq[String]]] = None) extend
 
   val baseConsonants = Map(
     "" -> Seq("ア", "イ", "ウ", "エ", "オ"),
-    "b"-> Seq("バ", "ビ", "ブ", "べ", "ボ"),
+    "b"-> Seq("バ", "ビ", "ブ", "ベ", "ボ"),
     "c" -> Seq("カ", "キ", "ク", "ケ", "コ"),
     "d" -> Seq("ダ", "ヂ", "ヅ", "デ", "ド"),
     "f" -> Seq("ファ", "フィ", "フ", "フェ", "フォ"),
