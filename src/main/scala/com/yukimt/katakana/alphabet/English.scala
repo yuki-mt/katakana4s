@@ -53,6 +53,20 @@ case object English extends AlphabetConverter{
       case (sound, index) =>
         val isLast = index == sounds.size - 1
         val isNextLast = index == sounds.size - 2
+        val beforeVowel =
+          if(index == 0) ""
+          else kVowels(index - 1)
+
+        val beforeSound =
+          if(index == 0) Sound("", "")
+          else sounds(index - 1)
+
+        val nextSound =
+          if(isLast) Sound("", "")
+          else sounds(index + 1)
+
+        val isOverlapped = sound.consonant.size > 1 && sound.consonant.distinct.size == 1
+        
         if(sound.consonant.isEmpty){
           kVowels(index)
         
@@ -64,6 +78,8 @@ case object English extends AlphabetConverter{
           ""
         } else if (isLast && sounds.size > 1 && sounds(index-1) == Sound("m", "") && (sound == Sound("n", "") || sound == Sound("b", ""))){
           ""
+        } else if (sound == Sound("l", "") && beforeSound.vowel == "a" && nextSound.consonant == "k"){
+          ""
         } else {
           EnglishConsonant.consonants.get(sound.consonant)
             .getOrElse(EnglishConsonant.consonants(sound.consonant.head.toString)) match {
@@ -71,35 +87,25 @@ case object English extends AlphabetConverter{
               c.getKatakana(kVowels(index))
             
             case c: EnglishConsonant.Sokuon =>
-              val beforeVowel =
-                if(index == 0) ""
-                else kVowels(index - 1)
-              c.getKatakana(kVowels(index), beforeVowel, isLast)
+              c.getKatakana(kVowels(index), beforeVowel, isLast, isOverlapped)
             
             case EnglishConsonant.T =>
-              val beforeVowel =
-                if(index == 0) ""
-                else kVowels(index - 1)
               EnglishConsonant.T.getKatakana(kVowels(index), sound.vowel, beforeVowel, isLast)
             
             case EnglishConsonant.G =>
-              val beforeVowel =
-                if(index == 0) ""
-                else kVowels(index - 1)
               EnglishConsonant.G.getKatakana(kVowels(index), sound.vowel, beforeVowel, isLast, index == 0)
             
             case EnglishConsonant.M =>
               EnglishConsonant.M.getKatakana(kVowels(index), isLast)
             
             case EnglishConsonant.S =>
-              val isOverlapped = sound.consonant.size > 1 && sound.consonant.distinct.size == 1
-              val beforeConsonant =
-                if(index == 0) ""
-                else sounds(index - 1).consonant
-              EnglishConsonant.S.getKatakana(kVowels(index), sound.vowel, isLast, beforeConsonant, isOverlapped)
+              EnglishConsonant.S.getKatakana(kVowels(index), sound.vowel, isLast, beforeSound, isOverlapped)
             
             case EnglishConsonant.C =>
               EnglishConsonant.C.getKatakana(kVowels(index), sound.vowel)
+            
+            case EnglishConsonant.Gh =>
+              EnglishConsonant.Gh.getKatakana(kVowels(index), sound.vowel, beforeSound.vowel, isLast)
           }
         }
     }.mkString

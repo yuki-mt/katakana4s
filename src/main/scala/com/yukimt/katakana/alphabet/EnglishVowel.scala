@@ -4,7 +4,7 @@ package alphabet
 object EnglishVowel{
   private val shortVowels = Map('a'->"ア", 'i'->"イ", 'u'->"ア", 'e'->"エ", 'o'->"オ", 'y'->"イ", 'w'->"ウ")
   private val longVowels = Map('a'->"エー", 'i'->"アイ", 'u'->"ユー", 'e'->"イー", 'o'->"オー", 'y'->"アイ", 'w'->"ウ")
-  private val multiVowels = Map("ie"->"イー", "uy"->"アイ", "au"->"オー", "aw"->"オー", "eau"->"ユー", "eu"->"ユー", "io"->"イオ", "ou"->"アウ", "ye"->"イエ", "iew"->"ユー", "oo"->"ウー", "oy"->"オイ", "ew"->"ユー", "ure"-> "ユアー", "ore"->"オアー", "oor"->"オアー")
+  private val multiVowels = Map("ie"->"イー", "uy"->"アイ", "au"->"オー", "aw"->"オー", "eau"->"ユー", "eu"->"ユー", "io"->"イオ", "ou"->"アウ", "ye"->"イエ", "iew"->"ユー", "oo"->"ウー", "oy"->"オイ", "ew"->"ユー", "ure"-> "ユアー", "ore"->"オアー", "oor"->"オアー", "oi" -> "オイ")
 
   def convert(consonant: Alphabet, _vowel: Alphabet, nexts:(Option[Sound], Option[Sound]), size: Int): Katakana = {
     val vowel = 
@@ -20,10 +20,23 @@ object EnglishVowel{
       "アイエ"
     } else if(vowel == "ia" && nexts._2.isEmpty && nexts._1.exists(_.consonant == "l")){
       "アイア"
+    } else if(vowel == "oo" && nexts._2.isEmpty && nexts._1.exists(n => Set("ck", "t", "k", "d") contains n.consonant)){
+      "ウ"
     } else if(vowel == "ou" && nexts._1.exists(n => n.consonant.nonEmpty && n.vowel.isEmpty) && nexts._2.contains(Sound("l", "e"))){
       "ア"
     } else if(vowel == "ou" && nexts._2.isEmpty && nexts._1.contains(Sound("gh", ""))){
       "ア"
+    } else if(vowel == "ou" && nexts._2.isEmpty && nexts._1.contains(Sound("s", ""))){
+      "ア"
+    } else if(vowel == "a" && (nexts._1.exists(n => n.consonant == "ll") || nexts._1.contains(Sound("l", "")) && nexts._2.exists(n => n.consonant == "k"))){
+      "オー"
+    } else if(vowel == "o" && nexts._1.contains(Sound("l", "")) && nexts._2.exists(n => n.consonant == "d")){
+      "オー"
+    } else if(vowel == "e" && nexts._1.exists(n => n.consonant == "n") && consonant == "v"){
+      "ウ"
+    } else if(size > 2 && vowel == "e" && nexts._1.contains(Sound("d", "")) && nexts._2.isEmpty){
+      if(consonant == "t" || consonant == "d") "イ"
+      else ""
     } else if(consonant == "q"){
       vowel match {
         case "ui" => "ウイ"
@@ -51,13 +64,18 @@ object EnglishVowel{
           } else if (!vowel.endsWith("r") && nexts._1.exists(n => n.consonant.size == 1 && n.vowel.isEmpty) && nexts._2.contains(Sound("l", "e"))) {
             //longvowels if vowel + consonant(1 letter) + le
             longVowels(subVowel)
-          } else if (nexts._2.isEmpty && nexts._1.contains(Sound("ght", ""))) {
-            //longvowels if vowel + ght
+          } else if (!vowel.endsWith("r") && nexts._1.exists(n => n.consonant.size == 1 && n.vowel == "e") && nexts._2.contains(Sound("d", ""))) {
+            //longvowels if vowel + consonant(1 letter) + ed
+            longVowels(subVowel)
+          } else if (nexts._1.contains(Sound("gh", ""))) {
+            //longvowels if vowel + gh
             longVowels(subVowel)
           } else if (nexts._1.exists(n => (n.consonant == "t" || n.consonant == "s") && n.vowel == "io") && nexts._2.contains(Sound("n", ""))) {
             //longvowels if vowel + (tion or sion)
             longVowels(subVowel)
           } else if(nexts._1.isEmpty && vowel.size == 1 && vowel != "y" && vowel != "a") {
+            longVowels(subVowel)
+          } else if(nexts._1.exists(n => n.vowel == "ou") && nexts._2.contains(Sound("s", ""))) {
             longVowels(subVowel)
           } else {
             shortVowels(subVowel)

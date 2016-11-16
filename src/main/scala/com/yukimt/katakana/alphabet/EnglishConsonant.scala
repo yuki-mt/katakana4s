@@ -37,7 +37,7 @@ object EnglishConsonant {
     "r" -> Normal(Seq("ラ", "リ", "ル", "レ", "ロ", "ル"), "アー"),
     "s" -> S,
     "t" -> T,
-    "v" -> Normal(Seq("バ", "ヴィ", "ヴ", "ベ", "ボ", "ビュ"), "ブ"),
+    "v" -> Normal(Seq("バ", "ヴィ", "ブ", "ベ", "ボ", "ビュ"), "ブ"),
     "w" -> Normal(Seq("ワ", "ウィ", "ウ", "ウェ", "ウォ", "ウ"), "ウ"),
     "x" -> Sokuon(Seq("クザ", "クジ", "クス", "クゼ", "クゾ", "クジュ"), "クス"),
     "y" -> Normal(Seq("ヤ", "イ", "ユ", "イェ", "ヨ", "ユ"), "イ"),
@@ -47,13 +47,13 @@ object EnglishConsonant {
     "tch" -> Sokuon(Seq("チャ", "チ", "チュ", "チェ", "チョ", "チュ"), "チ"),
     "ck" -> Sokuon(Seq("カ", "キ", "ク", "ケ", "コ", "キュ"), "ク"),
     "sh" -> Sokuon(Seq("シャ", "シ", "シュ", "シェ", "ショ", "シュ"), "シュ"),
-    "gh" -> Normal(Seq("ガ", "ギ", "グ", "ジェ", "ゴ", "グ"), "フ"),
+    "gh" -> Gh,
     "ph" -> Normal(Seq("ファ", "フィ", "フ", "フェ", "フォ", "フュ"), "フ"),
     "ps" -> Normal(Seq("サ", "シ", "ス", "セ", "ソ", "ス"), "プス"),
-    "ght" -> Normal(Seq("タ", "ティ", "トゥ", "テ", "ト", "トゥ"), "ト"),
     "th" -> Normal(Seq("サ", "シ", "ス", "セ", "ソ", "ス"), "ス"),
     "wh" -> Normal(Seq("ワ", "ウィ", "フ", "ウェ", "ホ", "フ"), "フ"),
-    "ff" -> Sokuon(Seq("ファ", "フィ", "フ", "フェ", "フォ", "フュ"), ">フ"),
+    "ff" -> Sokuon(Seq("ファ", "フィ", "フ", "フェ", "フォ", "フュ"), "フ"),
+    "ts" -> Sokuon(Seq("タ", "チ", "ツ", "テ", "ト", "ツ"), "ツ"),
     "sc" -> Normal(Seq("サ", "シ", "ス", "セ", "ソ", "ス"), "ス")
   )
 
@@ -68,8 +68,8 @@ object EnglishConsonant {
     if(candidates.size != 6)
       throw new IllegalArgumentException("the size of candidates needs to be 6")
 
-    def getKatakana(vowel: Katakana, beforeVowel: Katakana, isLast: Boolean) = {
-      if(vowel.isEmpty && beforeVowel.size == 1 && isLast) "ッ" + default
+    def getKatakana(vowel: Katakana, beforeVowel: Katakana, isLast: Boolean, isOverlapped: Boolean) = {
+      if(vowel.isEmpty && beforeVowel.size == 1 && (isLast || isOverlapped)) "ッ" + default
       else convert(vowel)
     }
   }
@@ -106,12 +106,12 @@ object EnglishConsonant {
     val candidates = Seq("サ", "シ", "ス", "セ", "ソ", "ス")
     val default = "ス"
 
-    def getKatakana(kVowel: Katakana, aVowel: Alphabet, isLast: Boolean, beforeConsonant: Alphabet, isOverlapped: Boolean) = {
+    def getKatakana(kVowel: Katakana, aVowel: Alphabet, isLast: Boolean, beforeSound: Sound, isOverlapped: Boolean) = {
       if(aVowel == "io" && isOverlapped){
         "ッショ"
       } else if(aVowel == "io"){
         "ジョ"
-      } else if(!isOverlapped && kVowel.isEmpty && isLast && !(Set("f", "p", "k", "th") contains beforeConsonant)){
+      } else if(!isOverlapped && kVowel.isEmpty && isLast && !Set("f", "p", "k", "th").contains(beforeSound.consonant) && beforeSound.vowel != "ou"){
         "ズ"
       } else convert(kVowel)
     }
@@ -129,6 +129,17 @@ object EnglishConsonant {
     }
   }
   
+  case object Gh extends EnglishConsonant{
+    val candidates = Seq("ガ", "ギ", "グ", "ジェ", "ゴ", "グ")
+    val default = "フ"
+    
+    def getKatakana(kVowel: Katakana, aVowel: Alphabet, beforeVowel: Alphabet, isLast: Boolean) = {
+      if(isLast && beforeVowel == "ou" && aVowel.isEmpty) default
+      else if(aVowel.isEmpty) ""
+      else convert(kVowel)
+    }
+  }
+
   case object C extends EnglishConsonant{
     val candidates = Seq("カ", "キ", "ク", "ケ", "コ", "キュ")
     val subCandidates = Seq("サ", "シ", "ス", "セ", "ソ", "ス")

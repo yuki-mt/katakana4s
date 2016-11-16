@@ -44,6 +44,20 @@ class EnglishSpec extends Specification{
       English.convert(English.decompose("sore")) === "ソアー"
       English.convert(English.decompose("doctor")) === "ドクター"
       English.convert(English.decompose("class")) === "クラス"
+      English.convert(English.decompose("foot")) === "フット"
+      English.convert(English.decompose("cook")) === "クック"
+      English.convert(English.decompose("small")) === "スモール"
+      English.convert(English.decompose("high")) === "ハイ"
+      English.convert(English.decompose("night")) === "ナイト"
+      English.convert(English.decompose("rough")) === "ラフ"
+      English.convert(English.decompose("fold")) === "フォールド"
+      English.convert(English.decompose("seven")) === "セブン"
+      English.convert(English.decompose("spilits")) === "スピリッツ"
+      English.convert(English.decompose("talk")) === "トーク"
+      English.convert(English.decompose("famous")) === "フェーマス"
+      English.convert(English.decompose("fought")) === "ファウト"
+      English.convert(English.decompose("stopped")) === "ストップド"
+      English.convert(English.decompose("dated")) === "デーティッド"
     }
   }
 } 
