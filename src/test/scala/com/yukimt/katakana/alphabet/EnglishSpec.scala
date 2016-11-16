@@ -39,6 +39,11 @@ class EnglishSpec extends Specification{
       English.convert(English.decompose("gun")) === "ガン"
       English.convert(English.decompose("class")) === "クラス"
       English.convert(English.decompose("slowly")) === "スローリー"
+      English.convert(English.decompose("cure")) === "キュアー"
+      English.convert(English.decompose("floor")) === "フロアー"
+      English.convert(English.decompose("sore")) === "ソアー"
+      English.convert(English.decompose("doctor")) === "ドクター"
+      English.convert(English.decompose("class")) === "クラス"
     }
   }
 } 
