@@ -21,7 +21,7 @@ trait EnglishConsonant{
 }
 object EnglishConsonant {
   val consonants = Map(
-    "b" -> Normal(Seq("バ", "ビ", "ブ", "べ", "ボ", "ビュ"), "ブ"),
+    "b" -> Normal(Seq("バ", "ビ", "ブ", "ベ", "ボ", "ビュ"), "ブ"),
     "c" -> C,
     "d" -> Sokuon(Seq("ダ", "ディ", "デュ", "デ", "ド", "デュ"), "ド"),
     "f" -> Normal(Seq("ファ", "フィ", "フ", "フェ", "フォ", "フュ"), "フ"),
@@ -44,6 +44,7 @@ object EnglishConsonant {
     "z" -> Normal(Seq("ザ", "ジ", "ズ", "ゼ", "ゾ", "ジュ"), "ズ"),
     "dg" -> G,
     "ch" -> Sokuon(Seq("チャ", "チ", "チュ", "チェ", "チョ", "チュ"), "チ"),
+    "tch" -> Sokuon(Seq("チャ", "チ", "チュ", "チェ", "チョ", "チュ"), "チ"),
     "ck" -> Sokuon(Seq("カ", "キ", "ク", "ケ", "コ", "キュ"), "ク"),
     "sh" -> Sokuon(Seq("シャ", "シ", "シュ", "シェ", "ショ", "シュ"), "シュ"),
     "gh" -> Normal(Seq("ガ", "ギ", "グ", "ジェ", "ゴ", "グ"), "フ"),
@@ -77,13 +78,15 @@ object EnglishConsonant {
     val candidates = Seq("ガ", "ギ", "グ", "ジェ", "ゴ", "グ")
     val default = "グ"
 
-    def getKatakana(kVowel: Katakana, aVowel: Alphabet, beforeVowel: Katakana, isLast: Boolean) = {
+    def getKatakana(kVowel: Katakana, aVowel: Alphabet, beforeVowel: Katakana, isLast: Boolean, isFirst: Boolean) = {
       if(kVowel.isEmpty && beforeVowel.size == 1 && isLast){
         "ッ" + default
       } else if(kVowel.isEmpty && aVowel == "e" && isLast){
         "ジ"
       } else if (kVowel == "エイ") {
         "ゲイ"
+      } else if (kVowel == "ア" && aVowel == "a" && isFirst) {
+        "ギャ"
       } else convert(kVowel)
     }
   }
@@ -108,7 +111,7 @@ object EnglishConsonant {
         "ッショ"
       } else if(aVowel == "io"){
         "ジョ"
-      } else if(kVowel.isEmpty && isLast && !(Set("f", "p", "k", "th") contains beforeConsonant)){
+      } else if(!isOverlapped && kVowel.isEmpty && isLast && !(Set("f", "p", "k", "th") contains beforeConsonant)){
         "ズ"
       } else convert(kVowel)
     }
@@ -140,6 +143,7 @@ object EnglishConsonant {
         default
       } else {
         aVowel.head match {
+          case 'a' if kVowel == "ア" => "キャ"
           case 'a' => convert(kVowel)
           case 'i' => subConvert(kVowel)
           case 'u' => convert(kVowel)

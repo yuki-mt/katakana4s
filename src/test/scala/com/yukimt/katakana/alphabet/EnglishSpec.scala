@@ -11,7 +11,7 @@ class EnglishSpec extends Specification{
     }
 
     "convert" in {
-      English.convert(Array(Sound("ph", "o"), Sound("t", "o"), Sound("g", ""), Sound("r", "a"), Sound("ph", "y"))) === "フォトグラフィ"
+      English.convert(Array(Sound("ph", "o"), Sound("t", "o"), Sound("g", ""), Sound("r", "a"), Sound("ph", "y"))) === "フォトグラフィー"
     }
 
     "decompose & convert" in {
@@ -30,6 +30,15 @@ class EnglishSpec extends Specification{
       English.convert(English.decompose("fish")) === "フィッシュ"
       English.convert(English.decompose("sharp")) === "シャープ"
       English.convert(English.decompose("organization")) === "オーガニゼーション"
+      English.convert(English.decompose("cat")) === "キャット"
+      English.convert(English.decompose("switch")) === "スウィッチ"
+      English.convert(English.decompose("bed")) === "ベッド"
+      English.convert(English.decompose("soy")) === "ソイ"
+      English.convert(English.decompose("new")) === "ニュー"
+      English.convert(English.decompose("gap")) === "ギャップ"
+      English.convert(English.decompose("gun")) === "ガン"
+      English.convert(English.decompose("class")) === "クラス"
+      English.convert(English.decompose("slowly")) === "スローリー"
     }
   }
 } 
