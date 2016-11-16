@@ -1,4 +1,4 @@
-/^al([^aiueo])/,オール$1
+/^al([^aiueol])/,オール$1
 /^any/,エニー
 /^break/,ブレイク
 /^some/,サム
@@ -34,6 +34,10 @@ doing,ドゥーイング
 doll,ドール
 early,アーリー
 easy,イージー
+eight,エイト
+eighty,エイティ
+eighteen,エイティーン
+eleven,イレブン
 even,イーブン
 evening,イーブニング
 everybody,エブリバディー
@@ -82,6 +86,8 @@ mother,マザー
 move,ムーブ
 my,マイ
 news,ニュース
+nineteen,ナインティーン
+ninety,ナインティ
 nobody,ノーバディー
 notebook,ノートブック
 nurse,ナース
@@ -163,4 +169,6 @@ yesterday,イエスタデー
 yet,イエット
 you,ユー
 young,ヤング
+yours,ユアー
+yourself,ユアセルフ
 yours,ユアーズ
