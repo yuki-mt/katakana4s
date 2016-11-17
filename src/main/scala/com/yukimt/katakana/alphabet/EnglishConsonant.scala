@@ -49,7 +49,7 @@ object EnglishConsonant {
     "sh" -> Sokuon(Seq("シャ", "シ", "シュ", "シェ", "ショ", "シュ"), "シュ"),
     "gh" -> Gh,
     "ph" -> Normal(Seq("ファ", "フィ", "フ", "フェ", "フォ", "フュ"), "フ"),
-    "ps" -> Normal(Seq("サ", "シ", "ス", "セ", "ソ", "ス"), "プス"),
+    "ps" -> Normal(Seq("サ", "シ", "ス", "セ", "ソ", "ス"), "ップス"),
     "th" -> Normal(Seq("サ", "シ", "ス", "セ", "ソ", "ス"), "ス"),
     "wh" -> Normal(Seq("ワ", "ウィ", "フ", "ウェ", "ホ", "フ"), "フ"),
     "ff" -> Sokuon(Seq("ファ", "フィ", "フ", "フェ", "フォ", "フュ"), "フ"),
@@ -118,7 +118,7 @@ object EnglishConsonant {
         "ッショ"
       } else if(aVowel == "io"){
         "ジョ"
-      } else if(isOverlapped || beforeSound.isEmpty || beforeSound.exists(s => Set("f", "p", "k", "th").contains(s.consonant) && s.vowel.isEmpty) || beforeSound.exists(_.vowel.size > 1)){
+      } else if(isOverlapped || beforeSound.isEmpty || beforeSound.exists(s => Set("f", "p", "k", "th").contains(s.consonant)) || beforeSound.exists(_.vowel.size > 1)){
         convert(kVowel)
       } else subConvert(kVowel)
     }

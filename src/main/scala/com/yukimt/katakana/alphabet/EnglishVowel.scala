@@ -6,13 +6,13 @@ object EnglishVowel{
   private val longVowels = Map('a'->"エイ", 'i'->"アイ", 'u'->"ユー", 'e'->"イー", 'o'->"オー", 'y'->"アイ", 'w'->"ウ")
   private val multiVowels = Map("ie"->"イー", "uy"->"アイ", "au"->"オー", "aw"->"オー", "eau"->"ユー", "eu"->"ユー", "io"->"イオ", "ou"->"アウ", "ye"->"イエ", "iew"->"ユー", "oo"->"ウー", "oy"->"オイ", "ew"->"ユー", "ure"-> "ユアー", "ore"->"オアー", "oor"->"オアー", "oi" -> "オイ")
 
-  def convert(consonant: Alphabet, _vowel: Alphabet, nexts:(Option[Sound], Option[Sound]), size: Int, isNextsLast: Boolean, isFirst: Boolean): Katakana = {
+  def convert(consonant: Alphabet, _vowel: Alphabet, nexts:(Option[Sound], Option[Sound], Option[Sound]), size: Int, isFirst: Boolean): Katakana = {
     val vowel = 
       if (_vowel == "re") "r"
       else _vowel
 
-    val isLast = nexts._1.isEmpty || nexts._2.isEmpty && nexts._1.contains(Sound("l", "y"))
-    val isNextLast = nexts._2.isEmpty || nexts._2.contains(Sound("l", "y")) && isNextsLast
+    val isLast = nexts._1.isEmpty || nexts._2.isEmpty && (nexts._1.contains(Sound("l", "y")) || nexts._1.contains(Sound("s", "")))
+    val isNextLast = nexts._2.isEmpty || (nexts._2.contains(Sound("l", "y")) || nexts._2.contains(Sound("s", ""))) && nexts._3.isEmpty
     if((vowel == "e" || vowel == "ue") && isLast && size > 1){
       //ignore e if sounds end with e and the size of sounds is more than 1
       if(consonant.isEmpty)
@@ -63,11 +63,11 @@ object EnglishVowel{
           if (!vowel.endsWith("r") && isNextLast && nexts._1.exists(n => n.consonant.size == 1 && Set("e", "or", "er", "ue").contains(n.vowel))) {
             //longvowels if vowel + consonant(1 letter) + [e, or, er]
             longVowels(subVowel)
-          } else if(nexts._1.contains(Sound("l", "")) && nexts._2.exists(n => n.consonant == "d" && (isNextsLast || n.vowel.nonEmpty))){
+          } else if(nexts._1.contains(Sound("l", "")) && nexts._2.exists(n => n.consonant == "d" && (nexts._3.isEmpty || n.vowel.nonEmpty))){
             //longvowels if vowel + ld[vowel]
             longVowels(subVowel)
-          } else if (!vowel.endsWith("r") && nexts._1.exists(n => n.consonant.size == 1 && n.vowel.isEmpty) && nexts._2.contains(Sound("l", "e"))) {
-            //longvowels if vowel + consonant(1 letter) + le
+          } else if (!vowel.endsWith("r") && (nexts._1.exists(n => n.consonant.size == 1 && n.vowel.isEmpty) && nexts._2.contains(Sound("l", "e"))) || (nexts._1.exists(n => n.consonant.size == 1 && n.vowel == "i") && nexts._2.contains(Sound("n", "")) && nexts._3.contains(Sound("g", "")))) {
+            //longvowels if vowel + consonant(1 letter) + [le, ing]
             longVowels(subVowel)
           } else if (!vowel.endsWith("r") && nexts._1.exists(n => n.consonant.size == 1 && n.vowel == "e") && nexts._2.contains(Sound("d", ""))) {
             //longvowels if vowel + consonant(1 letter) + ed

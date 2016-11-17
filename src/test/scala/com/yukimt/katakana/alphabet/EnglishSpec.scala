@@ -43,7 +43,6 @@ class EnglishSpec extends Specification{
       English.convert(English.decompose("floor")) === "フロアー"
       English.convert(English.decompose("sore")) === "ソアー"
       English.convert(English.decompose("doctor")) === "ドクター"
-      English.convert(English.decompose("class")) === "クラス"
       English.convert(English.decompose("foot")) === "フット"
       English.convert(English.decompose("cook")) === "クック"
       English.convert(English.decompose("small")) === "スモール"
@@ -72,6 +71,10 @@ class EnglishSpec extends Specification{
       English.convert(English.decompose("begin")) === "ビギン"
       English.convert(English.decompose("accept")) === "アクセプト"
       English.convert(English.decompose("completely")) === "コンプリートリー"
+      English.convert(English.decompose("driving")) === "ドライビング"
+      English.convert(English.decompose("drinking")) === "ドリンキング"
+      English.convert(English.decompose("stops")) === "ストップス"
+      English.convert(English.decompose("grapes")) === "グレイプス"
     }
   }
 } 

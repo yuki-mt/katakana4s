@@ -41,20 +41,21 @@ case object English extends AlphabetConverter{
       case (sound, index) =>
         if(sound.vowel.isEmpty) ""
         else {
-          val nexts: (Option[Sound], Option[Sound]) =
-            if (index == sounds.size - 1) (None, None)
-            else if (index == sounds.size - 2) (Some(sounds(index + 1)), None)
-            else (Some(sounds(index + 1)), Some(sounds(index + 2)))
+          val nexts: (Option[Sound], Option[Sound], Option[Sound]) =
+            if (index == sounds.size - 1) (None, None, None)
+            else if (index == sounds.size - 2) (Some(sounds(index + 1)), None, None)
+            else if (index == sounds.size - 3) (Some(sounds(index + 1)), Some(sounds(index + 2)), None)
+            else (Some(sounds(index + 1)), Some(sounds(index + 2)), Some(sounds(index + 3)))
 
-          val isNextsLast = index == sounds.size - 3
           val isFirst = index == 0
-          EnglishVowel.convert(sound.consonant, sound.vowel, nexts, sounds.size, isNextsLast, isFirst)
+          EnglishVowel.convert(sound.consonant, sound.vowel, nexts, sounds.size, isFirst)
         }
     }
     sounds.zipWithIndex.map{
       case (sound, index) =>
-        val isLast = index == sounds.size - 1 || index == sounds.size && sounds(index+1) == Sound("l", "y")
-        val isNextLast = index == sounds.size - 2 || index == sounds.size && sounds(index+2) == Sound("l", "y")
+        val isLast = index == sounds.size - 1 || index == sounds.size - 2 && (sounds(index+1) == Sound("l", "y") || sounds(index+1) == Sound("s", ""))
+        val isNextLast = index == sounds.size - 2 || index == sounds.size - 3 && (sounds(index+2) == Sound("l", "y") || sounds(index+2) == Sound("s", ""))
+
         val beforeKVowel =
           if(index == 0) None
           else Some(kVowels(index - 1))
@@ -76,9 +77,9 @@ case object English extends AlphabetConverter{
           "ム"
         } else if (isNextLast && sound == Sound("g", "") && sounds(index+1) == Sound("n", "")){
           "ン"
-        } else if (isLast && sounds.size > 1 && sound == Sound("n", "") && sounds(index-1) == Sound("g", "")){
+        } else if (isLast && sounds.size > 1 && sound == Sound("n", "") && index > 0 && sounds(index-1) == Sound("g", "")){
           ""
-        } else if (isLast && sounds.size > 1 && sounds(index-1) == Sound("m", "") && (sound == Sound("n", "") || sound == Sound("b", ""))){
+        } else if (isLast && sounds.size > 1 && index > 0 && sounds(index-1) == Sound("m", "") && (sound == Sound("n", "") || sound == Sound("b", ""))){
           ""
         } else if (sound == Sound("l", "") && beforeSound.exists(_.vowel == "a") && nextSound.consonant == "k"){
           ""
