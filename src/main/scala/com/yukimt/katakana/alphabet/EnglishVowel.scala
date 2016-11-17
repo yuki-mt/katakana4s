@@ -6,7 +6,7 @@ object EnglishVowel{
   private val longVowels = Map('a'->"エイ", 'i'->"アイ", 'u'->"ユー", 'e'->"イー", 'o'->"オー", 'y'->"アイ", 'w'->"ウ")
   private val multiVowels = Map("ie"->"イー", "uy"->"アイ", "au"->"オー", "aw"->"オー", "eau"->"ユー", "eu"->"ユー", "io"->"イオ", "ou"->"アウ", "ye"->"イエ", "iew"->"ユー", "oo"->"ウー", "oy"->"オイ", "ew"->"ユー", "ure"-> "ユアー", "ore"->"オアー", "oor"->"オアー", "oi" -> "オイ")
 
-  def convert(consonant: Alphabet, _vowel: Alphabet, nexts:(Option[Sound], Option[Sound]), size: Int): Katakana = {
+  def convert(consonant: Alphabet, _vowel: Alphabet, nexts:(Option[Sound], Option[Sound]), size: Int, isNextsLast: Boolean): Katakana = {
     val vowel = 
       if (_vowel == "re") "r"
       else _vowel
@@ -29,8 +29,6 @@ object EnglishVowel{
     } else if(vowel == "ou" && nexts._2.isEmpty && nexts._1.contains(Sound("s", ""))){
       "ア"
     } else if(vowel == "a" && (nexts._1.exists(n => n.consonant == "ll") || nexts._1.contains(Sound("l", "")) && nexts._2.exists(n => n.consonant == "k"))){
-      "オー"
-    } else if(vowel == "o" && nexts._1.contains(Sound("l", "")) && nexts._2.exists(n => n.consonant == "d")){
       "オー"
     } else if(vowel == "e" && nexts._1.exists(n => n.consonant == "n") && consonant == "v"){
       "ウ"
@@ -60,6 +58,9 @@ object EnglishVowel{
         val subKatakana =
           if (!vowel.endsWith("r") && nexts._2.isEmpty && nexts._1.exists(n => n.consonant.size == 1 && Set("e", "or", "er", "ue").contains(n.vowel))) {
             //longvowels if vowel + consonant(1 letter) + [e, or, er]
+            longVowels(subVowel)
+          } else if(nexts._1.contains(Sound("l", "")) && nexts._2.exists(n => n.consonant == "d" && (isNextsLast || n.vowel.nonEmpty))){
+            //longvowels if vowel + ld[vowel]
             longVowels(subVowel)
           } else if (!vowel.endsWith("r") && nexts._1.exists(n => n.consonant.size == 1 && n.vowel.isEmpty) && nexts._2.contains(Sound("l", "e"))) {
             //longvowels if vowel + consonant(1 letter) + le

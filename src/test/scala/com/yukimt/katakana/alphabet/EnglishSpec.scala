@@ -51,6 +51,8 @@ class EnglishSpec extends Specification{
       English.convert(English.decompose("night")) === "ナイト"
       English.convert(English.decompose("rough")) === "ラフ"
       English.convert(English.decompose("fold")) === "フォールド"
+      English.convert(English.decompose("childish")) === "チャイルディッシュ"
+      English.convert(English.decompose("children")) === "チルドレン"
       English.convert(English.decompose("seven")) === "セブン"
       English.convert(English.decompose("spilits")) === "スピリッツ"
       English.convert(English.decompose("talk")) === "トーク"
