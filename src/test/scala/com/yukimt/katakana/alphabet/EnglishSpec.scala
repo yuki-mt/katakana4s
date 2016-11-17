@@ -59,6 +59,14 @@ class EnglishSpec extends Specification{
       English.convert(English.decompose("stopped")) === "ストップド"
       English.convert(English.decompose("dated")) === "デイテッド"
       English.convert(English.decompose("freeze")) === "フリーズ"
+      English.convert(English.decompose("present")) === "プレゼント"
+      English.convert(English.decompose("use")) === "ユーズ"
+      English.convert(English.decompose("rose")) === "ローズ"
+      English.convert(English.decompose("house")) === "ハウス"
+      English.convert(English.decompose("news")) === "ニュース"
+      English.convert(English.decompose("nurse")) === "ナース"
+      English.convert(English.decompose("visit")) === "ビジット"
+      English.convert(English.decompose("was")) === "ワズ"
     }
   }
 } 

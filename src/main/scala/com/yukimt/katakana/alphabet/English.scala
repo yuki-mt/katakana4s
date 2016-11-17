@@ -53,13 +53,13 @@ case object English extends AlphabetConverter{
       case (sound, index) =>
         val isLast = index == sounds.size - 1
         val isNextLast = index == sounds.size - 2
-        val beforeVowel =
-          if(index == 0) ""
-          else kVowels(index - 1)
+        val beforeKVowel =
+          if(index == 0) None
+          else Some(kVowels(index - 1))
 
         val beforeSound =
-          if(index == 0) Sound("", "")
-          else sounds(index - 1)
+          if(index == 0) None
+          else Some(sounds(index - 1))
 
         val nextSound =
           if(isLast) Sound("", "")
@@ -78,7 +78,7 @@ case object English extends AlphabetConverter{
           ""
         } else if (isLast && sounds.size > 1 && sounds(index-1) == Sound("m", "") && (sound == Sound("n", "") || sound == Sound("b", ""))){
           ""
-        } else if (sound == Sound("l", "") && beforeSound.vowel == "a" && nextSound.consonant == "k"){
+        } else if (sound == Sound("l", "") && beforeSound.exists(_.vowel == "a") && nextSound.consonant == "k"){
           ""
         } else {
           EnglishConsonant.consonants.get(sound.consonant)
@@ -87,25 +87,25 @@ case object English extends AlphabetConverter{
               c.getKatakana(kVowels(index))
             
             case c: EnglishConsonant.Sokuon =>
-              c.getKatakana(kVowels(index), beforeVowel, isLast, isOverlapped)
+              c.getKatakana(kVowels(index), beforeKVowel, isLast, isOverlapped)
             
             case EnglishConsonant.T =>
-              EnglishConsonant.T.getKatakana(kVowels(index), sound.vowel, beforeVowel, isLast)
+              EnglishConsonant.T.getKatakana(kVowels(index), sound.vowel, beforeKVowel, isLast)
             
             case EnglishConsonant.G =>
-              EnglishConsonant.G.getKatakana(kVowels(index), sound.vowel, beforeVowel, isLast, index == 0)
+              EnglishConsonant.G.getKatakana(kVowels(index), sound.vowel, beforeKVowel, isLast, index == 0)
             
             case EnglishConsonant.M =>
               EnglishConsonant.M.getKatakana(kVowels(index), isLast)
             
             case EnglishConsonant.S =>
-              EnglishConsonant.S.getKatakana(kVowels(index), sound.vowel, isLast, beforeSound, isOverlapped)
+              EnglishConsonant.S.getKatakana(kVowels(index), sound.vowel, beforeSound, isOverlapped)
             
             case EnglishConsonant.C =>
               EnglishConsonant.C.getKatakana(kVowels(index), sound.vowel)
             
             case EnglishConsonant.Gh =>
-              EnglishConsonant.Gh.getKatakana(kVowels(index), sound.vowel, beforeSound.vowel, isLast)
+              EnglishConsonant.Gh.getKatakana(kVowels(index), sound.vowel, beforeSound.map(_.vowel), isLast)
           }
         }
     }.mkString

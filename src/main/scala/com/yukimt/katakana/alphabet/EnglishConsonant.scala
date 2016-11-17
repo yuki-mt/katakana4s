@@ -37,7 +37,7 @@ object EnglishConsonant {
     "r" -> Normal(Seq("ラ", "リ", "ル", "レ", "ロ", "ル"), "アー"),
     "s" -> S,
     "t" -> T,
-    "v" -> Normal(Seq("バ", "ヴィ", "ブ", "ベ", "ボ", "ビュ"), "ブ"),
+    "v" -> Normal(Seq("バ", "ビ", "ブ", "ベ", "ボ", "ビュ"), "ブ"),
     "w" -> Normal(Seq("ワ", "ウィ", "ウ", "ウェ", "ウォ", "ウ"), "ウ"),
     "x" -> Sokuon(Seq("クザ", "クジ", "クス", "クゼ", "クゾ", "クジュ"), "クス"),
     "y" -> Normal(Seq("ヤ", "イ", "ユ", "イェ", "ヨ", "ユ"), "イ"),
@@ -68,8 +68,8 @@ object EnglishConsonant {
     if(candidates.size != 6)
       throw new IllegalArgumentException("the size of candidates needs to be 6")
 
-    def getKatakana(vowel: Katakana, beforeVowel: Katakana, isLast: Boolean, isOverlapped: Boolean) = {
-      if(vowel.isEmpty && beforeVowel.size == 1 && (isLast || isOverlapped)) "ッ" + default
+    def getKatakana(vowel: Katakana, beforeVowel: Option[Katakana], isLast: Boolean, isOverlapped: Boolean) = {
+      if(vowel.isEmpty && beforeVowel.exists(_.size == 1) && (isLast || isOverlapped)) "ッ" + default
       else convert(vowel)
     }
   }
@@ -78,12 +78,12 @@ object EnglishConsonant {
     val candidates = Seq("ガ", "ギ", "グ", "ジェ", "ゴ", "グ")
     val default = "グ"
 
-    def getKatakana(kVowel: Katakana, aVowel: Alphabet, beforeVowel: Katakana, isLast: Boolean, isFirst: Boolean) = {
-      if(kVowel.isEmpty && beforeVowel.size == 1 && isLast){
+    def getKatakana(kVowel: Katakana, aVowel: Alphabet, beforeVowel: Option[Katakana], isLast: Boolean, isFirst: Boolean) = {
+      if(kVowel.isEmpty && beforeVowel.exists(_.size == 1) && isLast){
         "ッ" + default
       } else if(kVowel.isEmpty && aVowel == "e" && isLast){
         "ジ"
-      } else if (kVowel == "エイ" || kVowel == "エー") {
+      } else if (kVowel == "エイ") {
         "ゲイ"
       } else if (kVowel == "ア" && aVowel == "a" && isFirst) {
         "ギャ"
@@ -105,15 +105,21 @@ object EnglishConsonant {
   case object S extends EnglishConsonant{
     val candidates = Seq("サ", "シ", "ス", "セ", "ソ", "ス")
     val default = "ス"
+    val subCandidates = Seq("ザ", "ジ", "ズ", "ゼ", "ゾ", "ジュ")
+    val subDefault = "ズ"
 
-    def getKatakana(kVowel: Katakana, aVowel: Alphabet, isLast: Boolean, beforeSound: Sound, isOverlapped: Boolean) = {
+    def subConvert(vowel: Katakana) = 
+      if(vowel.isEmpty) subDefault
+      else subCandidates(vowelToInt(vowel.head)) + vowel.tail
+
+    def getKatakana(kVowel: Katakana, aVowel: Alphabet, beforeSound: Option[Sound], isOverlapped: Boolean) = {
       if(aVowel == "io" && isOverlapped){
         "ッショ"
       } else if(aVowel == "io"){
         "ジョ"
-      } else if(!isOverlapped && kVowel.isEmpty && isLast && !Set("f", "p", "k", "th").contains(beforeSound.consonant) && beforeSound.vowel != "ou"){
-        "ズ"
-      } else convert(kVowel)
+      } else if(isOverlapped || beforeSound.isEmpty || beforeSound.exists(s => Set("f", "p", "k", "th").contains(s.consonant) && s.vowel.isEmpty) || beforeSound.exists(_.vowel.size > 1)){
+        convert(kVowel)
+      } else subConvert(kVowel)
     }
   }
   
@@ -121,10 +127,10 @@ object EnglishConsonant {
     val candidates = Seq("タ", "ティ", "トゥ", "テ", "ト", "チュ")
     val default = "ト"
     
-    def getKatakana(kVowel: Katakana, aVowel: Alphabet, beforeVowel: Katakana, isLast: Boolean) = {
+    def getKatakana(kVowel: Katakana, aVowel: Alphabet, beforeVowel: Option[Katakana], isLast: Boolean) = {
       if(aVowel == "io") "ショ"
       else if(aVowel == "ure") "チャー"
-      else if(kVowel.isEmpty && beforeVowel.size == 1 && isLast) "ッ" + default
+      else if(kVowel.isEmpty && beforeVowel.exists(_.size == 1) && isLast) "ッ" + default
       else convert(kVowel)
     }
   }
@@ -133,8 +139,8 @@ object EnglishConsonant {
     val candidates = Seq("ガ", "ギ", "グ", "ジェ", "ゴ", "グ")
     val default = "フ"
     
-    def getKatakana(kVowel: Katakana, aVowel: Alphabet, beforeVowel: Alphabet, isLast: Boolean) = {
-      if(isLast && beforeVowel == "ou" && aVowel.isEmpty) default
+    def getKatakana(kVowel: Katakana, aVowel: Alphabet, beforeVowel: Option[Alphabet], isLast: Boolean) = {
+      if(isLast && beforeVowel.contains("ou") && aVowel.isEmpty) default
       else if(aVowel.isEmpty) ""
       else convert(kVowel)
     }
