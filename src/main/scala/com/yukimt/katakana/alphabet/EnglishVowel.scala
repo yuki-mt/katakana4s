@@ -11,30 +11,32 @@ object EnglishVowel{
       if (_vowel == "re") "r"
       else _vowel
 
-    if((vowel == "e" || vowel == "ue") && nexts._1.isEmpty && size > 1){
+    val isLast = nexts._1.isEmpty || nexts._2.isEmpty && nexts._1.contains(Sound("l", "y"))
+    val isNextLast = nexts._2.isEmpty || nexts._2.contains(Sound("l", "y")) && isNextsLast
+    if((vowel == "e" || vowel == "ue") && isLast && size > 1){
       //ignore e if sounds end with e and the size of sounds is more than 1
       if(consonant.isEmpty)
         throw new IllegalArgumentException("needs to have consonant")
       ""
-    } else if(vowel == "ie" && nexts._2.isEmpty && nexts._1.contains(Sound("t", ""))){
+    } else if(vowel == "ie" && isNextLast && nexts._1.contains(Sound("t", ""))){
       "アイエ"
     } else if(isFirst && size > 2 && vowel == "e" && Set("b", "d", "p", "r").contains(consonant)){
       "イ"
-    } else if(vowel == "ia" && nexts._2.isEmpty && nexts._1.exists(_.consonant == "l")){
+    } else if(vowel == "ia" && isNextLast && nexts._1.exists(_.consonant == "l")){
       "アイア"
-    } else if(vowel == "oo" && nexts._2.isEmpty && nexts._1.exists(n => Set("ck", "t", "k", "d") contains n.consonant)){
+    } else if(vowel == "oo" && isNextLast && nexts._1.exists(n => Set("ck", "t", "k", "d") contains n.consonant)){
       "ウ"
     } else if(vowel == "ou" && nexts._1.exists(n => n.consonant.nonEmpty && n.vowel.isEmpty) && nexts._2.contains(Sound("l", "e"))){
       "ア"
-    } else if(vowel == "ou" && nexts._2.isEmpty && nexts._1.contains(Sound("gh", ""))){
+    } else if(vowel == "ou" && isNextLast && nexts._1.contains(Sound("gh", ""))){
       "ア"
-    } else if(vowel == "ou" && nexts._2.isEmpty && nexts._1.contains(Sound("s", ""))){
+    } else if(vowel == "ou" && isNextLast && nexts._1.contains(Sound("s", ""))){
       "ア"
     } else if(vowel == "a" && (nexts._1.exists(n => n.consonant == "ll") || nexts._1.contains(Sound("l", "")) && nexts._2.exists(n => n.consonant == "k"))){
       "オー"
     } else if(vowel == "e" && nexts._1.exists(n => n.consonant == "n") && consonant == "v"){
       "ウ"
-    } else if(size > 2 && vowel == "e" && nexts._1.contains(Sound("d", "")) && nexts._2.isEmpty){
+    } else if(size > 2 && vowel == "e" && nexts._1.contains(Sound("d", "")) && isNextLast){
       if(consonant == "t" || consonant == "d") "エ"
       else ""
     } else if(consonant == "q"){
@@ -47,18 +49,18 @@ object EnglishVowel{
     } else if(multiVowels contains vowel){
       multiVowels(vowel)
     } else if(vowel.endsWith("r") && multiVowels.contains(vowel.dropRight(1))){
-      addRSound(multiVowels(vowel.dropRight(1)), nexts._1.isEmpty)
+      addRSound(multiVowels(vowel.dropRight(1)), isLast)
     } else if(vowel.size > 2 && vowel.endsWith("r")){
-      addRSound(longVowels(vowel.head), nexts._1.isEmpty)
+      addRSound(longVowels(vowel.head), isLast)
     } else if(vowel.size > 1 && !vowel.endsWith("r")){
       longVowels(vowel.head)
     } else {
       if(vowel == "r") "アー"
-      else if (vowel == "y" && nexts._1.isEmpty) "イー"
+      else if (vowel == "y" && isLast) "イー"
       else {
         val subVowel = vowel.head
         val subKatakana =
-          if (!vowel.endsWith("r") && nexts._2.isEmpty && nexts._1.exists(n => n.consonant.size == 1 && Set("e", "or", "er", "ue").contains(n.vowel))) {
+          if (!vowel.endsWith("r") && isNextLast && nexts._1.exists(n => n.consonant.size == 1 && Set("e", "or", "er", "ue").contains(n.vowel))) {
             //longvowels if vowel + consonant(1 letter) + [e, or, er]
             longVowels(subVowel)
           } else if(nexts._1.contains(Sound("l", "")) && nexts._2.exists(n => n.consonant == "d" && (isNextsLast || n.vowel.nonEmpty))){
@@ -76,7 +78,7 @@ object EnglishVowel{
           } else if (nexts._1.exists(n => (n.consonant == "t" || n.consonant == "s") && n.vowel == "io") && nexts._2.contains(Sound("n", ""))) {
             //longvowels if vowel + (tion or sion)
             longVowels(subVowel)
-          } else if(nexts._1.isEmpty && vowel.size == 1 && vowel != "y" && vowel != "a") {
+          } else if(isLast && vowel.size == 1 && vowel != "y" && vowel != "a") {
             longVowels(subVowel)
           } else if(nexts._1.exists(n => n.vowel == "ou") && nexts._2.contains(Sound("s", ""))) {
             longVowels(subVowel)
@@ -84,7 +86,7 @@ object EnglishVowel{
             shortVowels(subVowel)
           }
 
-        if (vowel endsWith "r") addRSound(subKatakana, nexts._1.isEmpty)
+        if (vowel endsWith "r") addRSound(subKatakana, isLast)
         else subKatakana
       }
     }

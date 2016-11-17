@@ -53,8 +53,8 @@ case object English extends AlphabetConverter{
     }
     sounds.zipWithIndex.map{
       case (sound, index) =>
-        val isLast = index == sounds.size - 1
-        val isNextLast = index == sounds.size - 2
+        val isLast = index == sounds.size - 1 || index == sounds.size && sounds(index+1) == Sound("l", "y")
+        val isNextLast = index == sounds.size - 2 || index == sounds.size && sounds(index+2) == Sound("l", "y")
         val beforeKVowel =
           if(index == 0) None
           else Some(kVowels(index - 1))
