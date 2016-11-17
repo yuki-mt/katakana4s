@@ -113,14 +113,16 @@ object EnglishConsonant {
       if(vowel.isEmpty) subDefault
       else subCandidates(vowelToInt(vowel.head)) + vowel.tail
 
-    def getKatakana(kVowel: Katakana, aVowel: Alphabet, beforeSound: Option[Sound], isOverlapped: Boolean) = {
+    def getKatakana(kVowel: Katakana, aVowel: Alphabet, beforeSound: Option[Sound], isOverlapped: Boolean, isLast: Boolean) = {
       if(aVowel == "io" && isOverlapped){
         "ッショ"
       } else if(aVowel == "io"){
         "ジョ"
-      } else if(isOverlapped || beforeSound.isEmpty || beforeSound.exists(s => Set("f", "p", "k", "th").contains(s.consonant)) || beforeSound.exists(_.vowel.size > 1)){
+      } else if(!isLast || beforeSound.isEmpty || isOverlapped || beforeSound.exists(s => Set("c", "s", "x", "f", "h", "p", "k", "th").contains(s.consonant)) || beforeSound.exists(s => s.vowel == "ou")){
         convert(kVowel)
-      } else subConvert(kVowel)
+      } else if (isLast && aVowel.isEmpty && beforeSound.exists(n => Set("b", "d", "g", "j", "l", "m", "n", "q", "r", "v", "z").contains(n.consonant))) {
+        subConvert(kVowel)
+      } else convert(kVowel)
     }
   }
   

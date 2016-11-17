@@ -102,7 +102,7 @@ case object English extends AlphabetConverter{
               EnglishConsonant.M.getKatakana(kVowels(index), isLast)
             
             case EnglishConsonant.S =>
-              EnglishConsonant.S.getKatakana(kVowels(index), sound.vowel, beforeSound, isOverlapped)
+              EnglishConsonant.S.getKatakana(kVowels(index), sound.vowel, beforeSound, isOverlapped, isLast)
             
             case EnglishConsonant.C =>
               EnglishConsonant.C.getKatakana(kVowels(index), sound.vowel)

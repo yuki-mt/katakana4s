@@ -38,7 +38,6 @@ class EnglishSpec extends Specification{
       English.convert(English.decompose("gap")) === "ギャップ"
       English.convert(English.decompose("gun")) === "ガン"
       English.convert(English.decompose("class")) === "クラス"
-      English.convert(English.decompose("slowly")) === "スローリー"
       English.convert(English.decompose("cure")) === "キュアー"
       English.convert(English.decompose("floor")) === "フロアー"
       English.convert(English.decompose("sore")) === "ソアー"
@@ -60,13 +59,11 @@ class EnglishSpec extends Specification{
       English.convert(English.decompose("stopped")) === "ストップド"
       English.convert(English.decompose("dated")) === "デイテッド"
       English.convert(English.decompose("freeze")) === "フリーズ"
-      English.convert(English.decompose("present")) === "プレゼント"
       English.convert(English.decompose("use")) === "ユーズ"
       English.convert(English.decompose("rose")) === "ローズ"
       English.convert(English.decompose("house")) === "ハウス"
       English.convert(English.decompose("news")) === "ニュース"
       English.convert(English.decompose("nurse")) === "ナース"
-      English.convert(English.decompose("visit")) === "ビジット"
       English.convert(English.decompose("was")) === "ワズ"
       English.convert(English.decompose("begin")) === "ビギン"
       English.convert(English.decompose("accept")) === "アクセプト"
@@ -75,6 +72,11 @@ class EnglishSpec extends Specification{
       English.convert(English.decompose("drinking")) === "ドリンキング"
       English.convert(English.decompose("stops")) === "ストップス"
       English.convert(English.decompose("grapes")) === "グレイプス"
+      English.convert(English.decompose("family")) === "ファミリー"
+      English.convert(English.decompose("sister")) === "シスター"
+      English.convert(English.decompose("town")) === "タウン"
+      English.convert(English.decompose("tennis")) === "テニス"
+      English.convert(English.decompose("his")) === "ヒズ"
     }
   }
 } 
