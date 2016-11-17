@@ -69,6 +69,8 @@ class EnglishSpec extends Specification{
       English.convert(English.decompose("nurse")) === "ナース"
       English.convert(English.decompose("visit")) === "ビジット"
       English.convert(English.decompose("was")) === "ワズ"
+      English.convert(English.decompose("begin")) === "ビギン"
+      English.convert(English.decompose("accept")) === "アクセプト"
     }
   }
 } 

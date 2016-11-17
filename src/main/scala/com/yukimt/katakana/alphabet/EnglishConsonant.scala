@@ -54,7 +54,8 @@ object EnglishConsonant {
     "wh" -> Normal(Seq("ワ", "ウィ", "フ", "ウェ", "ホ", "フ"), "フ"),
     "ff" -> Sokuon(Seq("ファ", "フィ", "フ", "フェ", "フォ", "フュ"), "フ"),
     "ts" -> Sokuon(Seq("タ", "チ", "ツ", "テ", "ト", "ツ"), "ツ"),
-    "sc" -> Normal(Seq("サ", "シ", "ス", "セ", "ソ", "ス"), "ス")
+    "sc" -> Normal(Seq("サ", "シ", "ス", "セ", "ソ", "ス"), "ス"),
+    "cc" -> Normal(Seq("クサ", "クシ", "クス", "クセ", "クソ", "クシュ"), "クス")
   )
 
   case class Normal(candidates: Seq[String], default: String) extends EnglishConsonant{

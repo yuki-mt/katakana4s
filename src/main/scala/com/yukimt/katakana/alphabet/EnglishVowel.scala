@@ -6,7 +6,7 @@ object EnglishVowel{
   private val longVowels = Map('a'->"エイ", 'i'->"アイ", 'u'->"ユー", 'e'->"イー", 'o'->"オー", 'y'->"アイ", 'w'->"ウ")
   private val multiVowels = Map("ie"->"イー", "uy"->"アイ", "au"->"オー", "aw"->"オー", "eau"->"ユー", "eu"->"ユー", "io"->"イオ", "ou"->"アウ", "ye"->"イエ", "iew"->"ユー", "oo"->"ウー", "oy"->"オイ", "ew"->"ユー", "ure"-> "ユアー", "ore"->"オアー", "oor"->"オアー", "oi" -> "オイ")
 
-  def convert(consonant: Alphabet, _vowel: Alphabet, nexts:(Option[Sound], Option[Sound]), size: Int, isNextsLast: Boolean): Katakana = {
+  def convert(consonant: Alphabet, _vowel: Alphabet, nexts:(Option[Sound], Option[Sound]), size: Int, isNextsLast: Boolean, isFirst: Boolean): Katakana = {
     val vowel = 
       if (_vowel == "re") "r"
       else _vowel
@@ -18,6 +18,8 @@ object EnglishVowel{
       ""
     } else if(vowel == "ie" && nexts._2.isEmpty && nexts._1.contains(Sound("t", ""))){
       "アイエ"
+    } else if(isFirst && size > 2 && vowel == "e" && Set("b", "d", "p", "r").contains(consonant)){
+      "イ"
     } else if(vowel == "ia" && nexts._2.isEmpty && nexts._1.exists(_.consonant == "l")){
       "アイア"
     } else if(vowel == "oo" && nexts._2.isEmpty && nexts._1.exists(n => Set("ck", "t", "k", "d") contains n.consonant)){
