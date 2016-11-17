@@ -83,7 +83,7 @@ object EnglishConsonant {
         "ッ" + default
       } else if(kVowel.isEmpty && aVowel == "e" && isLast){
         "ジ"
-      } else if (kVowel == "エイ") {
+      } else if (kVowel == "エイ" || kVowel == "エー") {
         "ゲイ"
       } else if (kVowel == "ア" && aVowel == "a" && isFirst) {
         "ギャ"

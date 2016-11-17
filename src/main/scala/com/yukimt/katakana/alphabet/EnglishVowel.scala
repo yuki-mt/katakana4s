@@ -3,7 +3,7 @@ package alphabet
 
 object EnglishVowel{
   private val shortVowels = Map('a'->"ア", 'i'->"イ", 'u'->"ア", 'e'->"エ", 'o'->"オ", 'y'->"イ", 'w'->"ウ")
-  private val longVowels = Map('a'->"エー", 'i'->"アイ", 'u'->"ユー", 'e'->"イー", 'o'->"オー", 'y'->"アイ", 'w'->"ウ")
+  private val longVowels = Map('a'->"エイ", 'i'->"アイ", 'u'->"ユー", 'e'->"イー", 'o'->"オー", 'y'->"アイ", 'w'->"ウ")
   private val multiVowels = Map("ie"->"イー", "uy"->"アイ", "au"->"オー", "aw"->"オー", "eau"->"ユー", "eu"->"ユー", "io"->"イオ", "ou"->"アウ", "ye"->"イエ", "iew"->"ユー", "oo"->"ウー", "oy"->"オイ", "ew"->"ユー", "ure"-> "ユアー", "ore"->"オアー", "oor"->"オアー", "oi" -> "オイ")
 
   def convert(consonant: Alphabet, _vowel: Alphabet, nexts:(Option[Sound], Option[Sound]), size: Int): Katakana = {
@@ -35,7 +35,7 @@ object EnglishVowel{
     } else if(vowel == "e" && nexts._1.exists(n => n.consonant == "n") && consonant == "v"){
       "ウ"
     } else if(size > 2 && vowel == "e" && nexts._1.contains(Sound("d", "")) && nexts._2.isEmpty){
-      if(consonant == "t" || consonant == "d") "イ"
+      if(consonant == "t" || consonant == "d") "エ"
       else ""
     } else if(consonant == "q"){
       vowel match {
@@ -94,6 +94,8 @@ object EnglishVowel{
       "アー"
     } else if (str endsWith "ー") {
       str.dropRight(1) + "アー"
+    } else if (str == "エイ") {
+      "エアー"
     } else {
       str + "アー"
     }
