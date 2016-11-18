@@ -86,6 +86,8 @@ object EnglishConsonant {
         "ジ"
       } else if (kVowel == "エイ") {
         "ゲイ"
+      } else if (kVowel == "エー") {
+        "ゲー"
       } else if (kVowel == "ア" && aVowel == "a" && isFirst) {
         "ギャ"
       } else convert(kVowel)
@@ -118,9 +120,7 @@ object EnglishConsonant {
         "ッショ"
       } else if(aVowel == "io"){
         "ジョ"
-      } else if(!isLast || beforeSound.isEmpty || isOverlapped || beforeSound.exists(s => Set("c", "s", "x", "f", "h", "p", "k", "th").contains(s.consonant)) || beforeSound.exists(s => s.vowel == "ou")){
-        convert(kVowel)
-      } else if (isLast && aVowel.isEmpty && beforeSound.exists(n => Set("b", "d", "g", "j", "l", "m", "n", "q", "r", "v", "z").contains(n.consonant))) {
+      } else if (!beforeSound.isEmpty && !beforeSound.exists(s => s.vowel == "ou") && !isOverlapped && isLast && (aVowel == "e" || aVowel.isEmpty && beforeSound.exists(n => Set("b", "d", "g", "h", "j", "l", "m", "n", "q", "r", "w", "v", "z").contains(n.consonant) && n.vowel.size < 2))) {
         subConvert(kVowel)
       } else convert(kVowel)
     }

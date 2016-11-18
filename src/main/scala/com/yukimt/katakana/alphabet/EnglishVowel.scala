@@ -3,7 +3,7 @@ package alphabet
 
 object EnglishVowel{
   private val shortVowels = Map('a'->"ア", 'i'->"イ", 'u'->"ア", 'e'->"エ", 'o'->"オ", 'y'->"イ", 'w'->"ウ")
-  private val longVowels = Map('a'->"エイ", 'i'->"アイ", 'u'->"ユー", 'e'->"イー", 'o'->"オー", 'y'->"アイ", 'w'->"ウ")
+  private val longVowels = Map('a'->"エー", 'i'->"アイ", 'u'->"ユー", 'e'->"イー", 'o'->"オー", 'y'->"アイ", 'w'->"ウ")
   private val multiVowels = Map("ie"->"イー", "uy"->"アイ", "au"->"オー", "aw"->"オー", "eau"->"ユー", "eu"->"ユー", "io"->"イオ", "ou"->"アウ", "ye"->"イエ", "iew"->"ユー", "oo"->"ウー", "oy"->"オイ", "ew"->"ユー", "ure"-> "ユアー", "ore"->"オアー", "oor"->"オアー", "oi" -> "オイ", "ow" -> "アウ")
 
   def convert(consonant: Alphabet, _vowel: Alphabet, nexts:(Option[Sound], Option[Sound], Option[Sound]), size: Int, isFirst: Boolean): Katakana = {
@@ -51,9 +51,10 @@ object EnglishVowel{
     } else if(vowel.endsWith("r") && multiVowels.contains(vowel.dropRight(1))){
       addRSound(multiVowels(vowel.dropRight(1)), isLast)
     } else if(vowel.size > 2 && vowel.endsWith("r")){
-      addRSound(longVowels(vowel.head), isLast)
+      addRSound((if(vowel.head == 'a') "エイ" else longVowels(vowel.head)), isLast)
     } else if(vowel.size > 1 && !vowel.endsWith("r")){
-      longVowels(vowel.head)
+      if(vowel.head == 'a') "エイ"
+      else longVowels(vowel.head)
     } else {
       if(vowel == "r") "アー"
       else if (vowel == "y" && isLast) "イー"
