@@ -79,6 +79,8 @@ class EnglishSpec extends Specification{
       English.convert(English.decompose("game")) === "ゲーム"
       English.convert(English.decompose("say")) === "セイ"
       English.convert(English.decompose("gay")) === "ゲイ"
+      English.convert(English.decompose("slow")) === "スロー"
+      English.convert(English.decompose("slowly")) === "スローリー"
     }
   }
 } 

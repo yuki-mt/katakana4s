@@ -30,6 +30,8 @@ object EnglishVowel{
       "ア"
     } else if(vowel == "ou" && isNextLast && nexts._1.contains(Sound("gh", ""))){
       "ア"
+    } else if(vowel == "ow" && isLast){
+      "オー"
     } else if(vowel == "ou" && isNextLast && nexts._1.contains(Sound("s", ""))){
       "ア"
     } else if(vowel == "a" && (nexts._1.exists(n => n.consonant == "ll") || nexts._1.contains(Sound("l", "")) && nexts._2.exists(n => n.consonant == "k"))){
