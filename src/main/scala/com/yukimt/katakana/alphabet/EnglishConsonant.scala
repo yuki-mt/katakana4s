@@ -29,7 +29,7 @@ object EnglishConsonant {
     "h" -> Normal(Seq("ハ", "ヒ", "フ", "ヘ", "ホ", "ヒュ"), "フ"),
     "j" -> Normal(Seq("ジャ", "ジ", "ジュ", "ジェ", "ジョ", "ジュ"), "ジュ"),
     "k" -> Sokuon(Seq("カ", "キ", "ク", "ケ", "コ", "キュ"), "ク"),
-    "l" -> Normal(Seq("ラ", "リ", "ル", "レ", "ロ", "リュ"), "ル"),
+    "l" -> Normal(Seq("ラ", "リ", "ル", "レ", "ロ", "ル"), "ル"),
     "m" -> M,
     "n" -> Normal(Seq("ナ", "ニ", "ヌ", "ネ", "ノ", "ニュ"), "ン"),
     "p" -> Sokuon(Seq("パ", "ピ", "プ", "ペ", "ポ", "ピュ"), "プ"),
@@ -54,7 +54,6 @@ object EnglishConsonant {
     "wh" -> Normal(Seq("ワ", "ウィ", "フ", "ウェ", "ホ", "フ"), "フ"),
     "ff" -> Sokuon(Seq("ファ", "フィ", "フ", "フェ", "フォ", "フュ"), "フ"),
     "ts" -> Sokuon(Seq("タ", "チ", "ツ", "テ", "ト", "ツ"), "ツ"),
-    "sc" -> Normal(Seq("サ", "シ", "ス", "セ", "ソ", "ス"), "ス"),
     "cc" -> Normal(Seq("クサ", "クシ", "クス", "クセ", "クソ", "クシュ"), "クス")
   )
 
@@ -70,8 +69,10 @@ object EnglishConsonant {
       throw new IllegalArgumentException("the size of candidates needs to be 6")
 
     def getKatakana(vowel: Katakana, beforeVowel: Option[Katakana], isLast: Boolean, isOverlapped: Boolean) = {
-      if(vowel.isEmpty && beforeVowel.exists(_.size == 1) && (isLast || isOverlapped)) "ッ" + default
-      else convert(vowel)
+      val sokuon = 
+        if(beforeVowel.exists(_.size == 1) && isLast) "ッ"
+        else ""
+      sokuon + convert(vowel)
     }
   }
 
@@ -80,17 +81,22 @@ object EnglishConsonant {
     val default = "グ"
 
     def getKatakana(kVowel: Katakana, aVowel: Alphabet, beforeVowel: Option[Katakana], isLast: Boolean, isFirst: Boolean) = {
-      if(kVowel.isEmpty && beforeVowel.exists(_.size == 1) && isLast){
-        "ッ" + default
-      } else if(kVowel.isEmpty && aVowel == "e" && isLast){
-        "ジ"
-      } else if (kVowel == "エイ") {
-        "ゲイ"
-      } else if (kVowel == "エー") {
-        "ゲー"
-      } else if (kVowel == "ア" && aVowel == "a" && isFirst) {
-        "ギャ"
-      } else convert(kVowel)
+      val sokuon =
+        if(kVowel.isEmpty && beforeVowel.exists(_.size == 1) && isLast) "ッ"
+        else ""
+      val res = 
+        if(aVowel == "ue" && isLast){
+          default
+        } else if(kVowel.isEmpty && aVowel == "e" && isLast){
+          "ジ"
+        } else if (kVowel == "エイ") {
+          "ゲイ"
+        } else if (kVowel == "エー") {
+          "ゲー"
+        } else if (kVowel == "ア" && aVowel == "a" && isFirst) {
+          "ギャ"
+        } else convert(kVowel)
+      sokuon + res
     }
   }
 
@@ -106,7 +112,7 @@ object EnglishConsonant {
   }
   
   case object S extends EnglishConsonant{
-    val candidates = Seq("サ", "シ", "ス", "セ", "ソ", "ス")
+    val candidates = Seq("サ", "シ", "ス", "セ", "ソ", "シュ")
     val default = "ス"
     val subCandidates = Seq("ザ", "ジ", "ズ", "ゼ", "ゾ", "ジュ")
     val subDefault = "ズ"
@@ -143,7 +149,7 @@ object EnglishConsonant {
     val default = "フ"
     
     def getKatakana(kVowel: Katakana, aVowel: Alphabet, beforeVowel: Option[Alphabet], isLast: Boolean) = {
-      if(isLast && beforeVowel.contains("ou") && aVowel.isEmpty) default
+      if(isLast && (beforeVowel.contains("au") || beforeVowel.contains("ou")) && aVowel.isEmpty) default
       else if(aVowel.isEmpty) ""
       else convert(kVowel)
     }
@@ -156,21 +162,28 @@ object EnglishConsonant {
     val subDefault = "ス"
 
     def subConvert(vowel: Katakana) = subCandidates(vowelToInt(vowel.head)) + vowel.tail 
-    def getKatakana(kVowel: Katakana, aVowel: Alphabet) = {
-      if(kVowel.isEmpty && aVowel.nonEmpty){
-        subDefault
-      } else if (aVowel.isEmpty){
-        default
-      } else {
-        aVowel.head match {
-          case 'a' if kVowel == "ア" => "キャ"
-          case 'a' => convert(kVowel)
-          case 'i' => subConvert(kVowel)
-          case 'u' => convert(kVowel)
-          case 'e' => subConvert(kVowel)
-          case 'o' => convert(kVowel)
+    def getKatakana(kVowel: Katakana, aVowel: Alphabet, beforeVowel: Option[Katakana], isLast: Boolean) = {
+      val sokuon =
+        if(kVowel.isEmpty && beforeVowel.exists(_.size == 1) && isLast) "ッ"
+        else ""
+      val res = 
+        if(kVowel.isEmpty && aVowel.nonEmpty){
+          subDefault
+        } else if (aVowel.isEmpty){
+          default
+        } else {
+          aVowel.head match {
+            case 'a' if kVowel == "ア" => "キャ"
+            case 'a' => convert(kVowel)
+            case 'i' => subConvert(kVowel)
+            case 'y' => subConvert(kVowel)
+            case 'u' => convert(kVowel)
+            case 'e' => subConvert(kVowel)
+            case 'o' => convert(kVowel)
+          }
         }
-      }
+
+      sokuon + res
     }
   }
 }

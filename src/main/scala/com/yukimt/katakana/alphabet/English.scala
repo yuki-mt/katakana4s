@@ -53,8 +53,8 @@ case object English extends AlphabetConverter{
     }
     sounds.zipWithIndex.map{
       case (sound, index) =>
-        val isLast = index == sounds.size - 1 || index == sounds.size - 2 && (sounds(index+1) == Sound("l", "y") || sounds(index+1) == Sound("s", ""))
-        val isNextLast = index == sounds.size - 2 || index == sounds.size - 3 && (sounds(index+2) == Sound("l", "y") || sounds(index+2) == Sound("s", ""))
+        val isLast = index == sounds.size - 1 || index == sounds.size - 2 && (sounds(index+1) == Sound("l", "y") || sounds(index+1) == Sound("s", "") || (sound.vowel == "e" && sounds(index+1) == Sound("d", "")))
+        val isNextLast = index == sounds.size - 2 || index == sounds.size - 3 && (sounds(index+2) == Sound("l", "y") || sounds(index+2) == Sound("s", "") || (sound.vowel == "e" && sounds(index+1) == Sound("d", "")))
 
         val beforeKVowel =
           if(index == 0) None
@@ -105,7 +105,7 @@ case object English extends AlphabetConverter{
               EnglishConsonant.S.getKatakana(kVowels(index), sound.vowel, beforeSound, isOverlapped, isLast)
             
             case EnglishConsonant.C =>
-              EnglishConsonant.C.getKatakana(kVowels(index), sound.vowel)
+              EnglishConsonant.C.getKatakana(kVowels(index), sound.vowel, beforeKVowel, isLast)
             
             case EnglishConsonant.Gh =>
               EnglishConsonant.Gh.getKatakana(kVowels(index), sound.vowel, beforeSound.map(_.vowel), isLast)

@@ -9,11 +9,12 @@ object EnglishVowel{
   def convert(consonant: Alphabet, _vowel: Alphabet, nexts:(Option[Sound], Option[Sound], Option[Sound]), size: Int, isFirst: Boolean): Katakana = {
     val vowel = 
       if (_vowel == "re") "r"
+      else if (_vowel endsWith "yi") _vowel.replace("yi", "i") // playing, dying
       else _vowel
 
-      val isLast = nexts._1.isEmpty || nexts._2.isEmpty && size > 2 && (nexts._1.contains(Sound("l", "y")) || nexts._1.contains(Sound("s", "")))
-      val isNextLast = nexts._2.isEmpty || (nexts._2.contains(Sound("l", "y")) || nexts._2.contains(Sound("s", ""))) && nexts._3.isEmpty && size > 2
-    if((vowel == "e" || vowel == "ue") && isLast && size > 1){
+      val isLast = nexts._1.isEmpty || nexts._2.isEmpty && size > 2 && (nexts._1.contains(Sound("l", "y")) || nexts._1.contains(Sound("s", "")) || (nexts._1.contains(Sound("", "e")) && nexts._2.contains(Sound("d", ""))) || (vowel == "i" && nexts._1.contains(Sound("n", "")) && nexts._2.contains(Sound("g", ""))))
+      val isNextLast = nexts._2.isEmpty || (nexts._2.contains(Sound("l", "y")) || nexts._2.contains(Sound("s", "")) && nexts._3.isEmpty && size > 2) || nexts._2.contains(Sound("", "e")) && nexts._3.contains(Sound("d", "")) || nexts._1.exists(_.vowel == "i") && nexts._2.contains(Sound("n", "")) && nexts._3.contains(Sound("g", ""))
+    if((vowel == "e") && isLast && size > 1){
       //ignore e if sounds end with e and the size of sounds is more than 1
       if(consonant.isEmpty)
         throw new IllegalArgumentException("needs to have consonant")
@@ -28,11 +29,11 @@ object EnglishVowel{
       "ウ"
     } else if(vowel == "ou" && nexts._1.exists(n => n.consonant.nonEmpty && n.vowel.isEmpty) && nexts._2.contains(Sound("l", "e"))){
       "ア"
-    } else if(vowel == "ou" && isNextLast && nexts._1.contains(Sound("gh", ""))){
+    } else if((vowel == "ou" || vowel == "au") && isNextLast && nexts._1.contains(Sound("gh", ""))){
       "ア"
     } else if(vowel == "o" && isLast && (consonant == "t" || consonant == "d")){
       "ウー"
-    } else if(vowel == "ow" && isLast && size > 1){
+    } else if(vowel == "ow" && isLast && (size > 1 || consonant.size > 1)){
       "オー"
     } else if(vowel == "ou" && isNextLast && nexts._1.contains(Sound("s", ""))){
       "ア"
@@ -53,25 +54,33 @@ object EnglishVowel{
     } else if(multiVowels contains vowel){
       multiVowels(vowel)
     } else if(vowel.endsWith("r") && multiVowels.contains(vowel.dropRight(1))){
-      addRSound(multiVowels(vowel.dropRight(1)), isLast)
+      addRSound(multiVowels(vowel.dropRight(1)), isLast, consonant)
     } else if(vowel.size > 2 && vowel.endsWith("r")){
-      addRSound((if(vowel.head == 'a') "エイ" else longVowels(vowel.head)), isLast)
+      addRSound((if(vowel.head == 'a') "エイ" else longVowels(vowel.head)), isLast, consonant)
     } else if(vowel.size > 1 && !vowel.endsWith("r")){
       if(vowel.head == 'a') "エイ"
       else longVowels(vowel.head)
     } else {
       if(vowel == "r") "アー"
-      else if (vowel == "y" && isLast) "イー"
-      else {
+      else if (vowel == "y" && isLast){
+        if(size > 2) "イー"
+        else "アイ"
+      } else if (vowel == "o" && isFirst && consonant.isEmpty && nexts._1.exists(_.vowel.nonEmpty)){
+        "オー"
+      } else if (vowel == "o" && isNextLast && nexts._1.exists(n => n.consonant == "m" && (n.vowel == "e" || n.vowel == "i"))){
+        "ア"
+      } else if (vowel == "e" && consonant.contains("p") && nexts._1.exists(_.consonant == "n")){
+        ""
+      } else {
         val subVowel = vowel.head
         val subKatakana =
-          if (!vowel.endsWith("r") && isNextLast && nexts._1.exists(n => n.consonant.size == 1 && Set("e", "or", "er", "ue").contains(n.vowel))) {
+          if (!(vowel == "i" && (consonant == "g" || consonant == "z")) && !vowel.endsWith("r") && isNextLast && nexts._1.exists(n => n.consonant.size == 1 && Set("e", "or", "er", "ue").contains(n.vowel))) {
             //longvowels if vowel + consonant(1 letter) + [e, or, er]
             longVowels(subVowel)
           } else if(nexts._1.contains(Sound("l", "")) && nexts._2.exists(n => n.consonant == "d" && (nexts._3.isEmpty || n.vowel.nonEmpty))){
             //longvowels if vowel + ld[vowel]
             longVowels(subVowel)
-          } else if (!vowel.endsWith("r") && (nexts._1.exists(n => n.consonant.size == 1 && n.vowel.isEmpty) && nexts._2.contains(Sound("l", "e"))) || (nexts._1.exists(n => n.consonant.size == 1 && n.vowel == "i") && nexts._2.contains(Sound("n", "")) && nexts._3.contains(Sound("g", "")))) {
+          } else if (!vowel.endsWith("r") && ((nexts._1.exists(n => n.consonant.size == 1 && n.vowel.isEmpty) && nexts._2.contains(Sound("l", "e"))) || (nexts._1.exists(n => n.consonant.size == 1 && n.vowel == "i") && nexts._2.contains(Sound("n", "")) && nexts._3.contains(Sound("g", ""))))) {
             //longvowels if vowel + consonant(1 letter) + [le, ing]
             longVowels(subVowel)
           } else if (!vowel.endsWith("r") && nexts._1.exists(n => n.consonant.size == 1 && n.vowel == "e") && nexts._2.contains(Sound("d", ""))) {
@@ -87,18 +96,23 @@ object EnglishVowel{
             longVowels(subVowel)
           } else if(nexts._1.exists(n => n.vowel == "ou") && nexts._2.contains(Sound("s", ""))) {
             longVowels(subVowel)
+          } else if(nexts._1.exists(n => n.vowel == "ure") && isNextLast) {
+            longVowels(subVowel)
+          } else if(nexts._1.exists(n => n.consonant.size == 1 && n.vowel == "ar")) {
+            if(vowel == "u") "ユ"
+            else longVowels(subVowel)
           } else {
             shortVowels(subVowel)
           }
 
-        if (vowel endsWith "r") addRSound(subKatakana, isLast)
+        if (vowel endsWith "r") addRSound(subKatakana, isLast, consonant)
         else subKatakana
       }
     }
   }
 
-  private def addRSound(str: Katakana, isLast: Boolean) = {
-    if (str == "オ" && !isLast) {
+  private def addRSound(str: Katakana, isLast: Boolean, consonant: Alphabet) = {
+    if (str == "オ" && !isLast && consonant != "w") {
       "オー"
     } else if (str.size == 1) {
       "アー"
