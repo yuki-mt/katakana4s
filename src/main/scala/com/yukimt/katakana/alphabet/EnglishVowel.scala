@@ -4,7 +4,7 @@ package alphabet
 object EnglishVowel{
   private val shortVowels = Map('a'->"ア", 'i'->"イ", 'u'->"ア", 'e'->"エ", 'o'->"オ", 'y'->"イ", 'w'->"ウ")
   private val longVowels = Map('a'->"エー", 'i'->"アイ", 'u'->"ユー", 'e'->"イー", 'o'->"オー", 'y'->"アイ", 'w'->"ウ")
-  private val multiVowels = Map("ie"->"イー", "uy"->"アイ", "au"->"オー", "aw"->"オー", "eau"->"ユー", "eu"->"ユー", "io"->"イオ", "ou"->"アウ", "ye"->"イエ", "iew"->"ユー", "oo"->"ウー", "oy"->"オイ", "ew"->"ユー", "ure"-> "ユアー", "ore"->"オアー", "oor"->"オアー", "oi" -> "オイ", "ow" -> "アウ")
+  private val multiVowels = Map("ii"->"イー", "ie"->"イー", "uy"->"アイ", "au"->"オー", "aw"->"オー", "eau"->"ユー", "eu"->"ユー", "io"->"イオ", "ou"->"アウ", "ye"->"イエ", "iew"->"ユー", "oo"->"ウー", "oy"->"オイ", "ew"->"ユー", "ure"-> "ユアー", "ore"->"オアー", "oor"->"オアー", "oi" -> "オイ", "ow" -> "アウ")
 
   def convert(consonant: Alphabet, _vowel: Alphabet, nexts:(Option[Sound], Option[Sound], Option[Sound]), size: Int, isFirst: Boolean): Katakana = {
     val vowel = 
@@ -30,6 +30,8 @@ object EnglishVowel{
       "ア"
     } else if(vowel == "ou" && isNextLast && nexts._1.contains(Sound("gh", ""))){
       "ア"
+    } else if(vowel == "o" && isLast && (consonant == "t" || consonant == "d")){
+      "ウー"
     } else if(vowel == "ow" && isLast && size > 1){
       "オー"
     } else if(vowel == "ou" && isNextLast && nexts._1.contains(Sound("s", ""))){

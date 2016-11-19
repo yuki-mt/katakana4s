@@ -87,6 +87,9 @@ class EnglishSpec extends Specification{
       English.convert(English.decompose("decompose")) === "ディコンポーズ"
       English.convert(English.decompose("cow")) === "カウ"
       English.convert(English.decompose("fantasy")) === "ファンタジー"
+      English.convert(English.decompose("table")) === "テーブル"
+      English.convert(English.decompose("into")) === "イントゥー"
+      English.convert(English.decompose("do")) === "ドゥー"
     }
   }
 } 
