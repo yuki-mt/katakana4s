@@ -62,8 +62,10 @@ class EnglishSpec extends Specification{
       English.convert(English.decompose("use")) === "ユーズ"
       English.convert(English.decompose("rose")) === "ローズ"
       English.convert(English.decompose("house")) === "ハウス"
-      English.convert(English.decompose("news")) === "ニュース"
       English.convert(English.decompose("was")) === "ワズ"
+      English.convert(English.decompose("as")) === "アズ"
+      English.convert(English.decompose("us")) === "アス"
+      English.convert(English.decompose("bus")) === "バス"
       English.convert(English.decompose("begin")) === "ビギン"
       English.convert(English.decompose("accept")) === "アクセプト"
       English.convert(English.decompose("completely")) === "コンプリートリー"
@@ -81,6 +83,10 @@ class EnglishSpec extends Specification{
       English.convert(English.decompose("gay")) === "ゲイ"
       English.convert(English.decompose("slow")) === "スロー"
       English.convert(English.decompose("slowly")) === "スローリー"
+      English.convert(English.decompose("best")) === "ベスト"
+      English.convert(English.decompose("decompose")) === "ディコンポーズ"
+      English.convert(English.decompose("cow")) === "カウ"
+      English.convert(English.decompose("fantasy")) === "ファンタジー"
     }
   }
 } 

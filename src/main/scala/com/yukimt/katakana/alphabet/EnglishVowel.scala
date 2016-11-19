@@ -20,7 +20,7 @@ object EnglishVowel{
       ""
     } else if(vowel == "ie" && isNextLast && nexts._1.contains(Sound("t", ""))){
       "アイエ"
-    } else if(isFirst && size > 2 && vowel == "e" && Set("b", "d", "r").contains(consonant)){
+    } else if(isFirst && size > 2 && vowel == "e" && Set("b", "d", "r").contains(consonant) && (nexts._1.exists(_.vowel.nonEmpty) ||nexts._2.exists(_.vowel.nonEmpty))){
       "イ"
     } else if(vowel == "ia" && isNextLast && nexts._1.exists(_.consonant == "l")){
       "アイア"
@@ -30,7 +30,7 @@ object EnglishVowel{
       "ア"
     } else if(vowel == "ou" && isNextLast && nexts._1.contains(Sound("gh", ""))){
       "ア"
-    } else if(vowel == "ow" && isLast){
+    } else if(vowel == "ow" && isLast && size > 1){
       "オー"
     } else if(vowel == "ou" && isNextLast && nexts._1.contains(Sound("s", ""))){
       "ア"

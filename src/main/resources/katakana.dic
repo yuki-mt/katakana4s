@@ -2,6 +2,7 @@
 /^any/,エニー
 /^break/,ブレイク
 /^some/,サム
+/^every/,エブリー
 /able$/,エイブル
 /ball$/,ボール
 /four/,フォー
@@ -42,7 +43,6 @@ coming,カミング
 contry,カントリー
 could,クド
 country,カントリー
-cow,カウ
 danger,デンジャー
 daughter,ドーター
 death,デス
@@ -53,9 +53,9 @@ does,ダズ
 doing,ドゥーイング
 doll,ドール
 done,ダン
+diary,ダイアリー
 during,デュアリング
 early,アーリー
-easy,イージー
 eight,エイト
 eighteen,エイティーン
 eighty,エイティ
@@ -199,7 +199,6 @@ with,ウィズ
 woman,ウーマン
 work,ワーク
 wound,ウーンド
-wow,ワオ
 write,ライト
 year,イヤー
 yesterday,イエスタデー

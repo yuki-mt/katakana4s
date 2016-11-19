@@ -120,7 +120,7 @@ object EnglishConsonant {
         "ッショ"
       } else if(aVowel == "io"){
         "ジョ"
-      } else if (!beforeSound.isEmpty && !beforeSound.exists(s => s.vowel == "ou") && !isOverlapped && isLast && (aVowel == "e" || aVowel.isEmpty && beforeSound.exists(n => Set("b", "d", "g", "h", "j", "l", "m", "n", "q", "r", "w", "v", "z").contains(n.consonant) && n.vowel.size < 2))) {
+      } else if (!beforeSound.isEmpty && !beforeSound.exists(s => s.vowel == "ou") && !isOverlapped && isLast && (aVowel == "e" || aVowel == "y" || beforeSound.exists(n => !Set("c", "f", "k", "p", "s", "t").contains(n.consonant) && n.consonant.size < 2 && n.vowel != "u"))) {
         subConvert(kVowel)
       } else convert(kVowel)
     }
