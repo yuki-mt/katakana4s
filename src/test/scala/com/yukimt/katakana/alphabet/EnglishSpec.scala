@@ -113,6 +113,10 @@ class EnglishSpec extends Specification{
       English.convert(English.decompose("solar")) === "ソーラー"
       English.convert(English.decompose("some")) === "サム"
       English.convert(English.decompose("coming")) === "カミング"
+      English.convert(English.decompose("pie")) === "パイ"
+      English.convert(English.decompose("hurry")) === "ハリー"
+      English.convert(English.decompose("discover")) === "ディスカバー"
+      English.convert(English.decompose("discovering")) === "ディスカバリング"
     }
   }
 } 

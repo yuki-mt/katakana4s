@@ -47,8 +47,8 @@ case object English extends AlphabetConverter{
             else if (index == sounds.size - 3) (Some(sounds(index + 1)), Some(sounds(index + 2)), None)
             else (Some(sounds(index + 1)), Some(sounds(index + 2)), Some(sounds(index + 3)))
 
-          val isFirst = index == 0
-          EnglishVowel.convert(sound.consonant, sound.vowel, nexts, sounds.size, isFirst)
+          val before = if(index == 0) None else Some(sounds(index - 1))
+          EnglishVowel.convert(sound.consonant, sound.vowel, before, nexts, sounds.size)
         }
     }
     sounds.zipWithIndex.map{
