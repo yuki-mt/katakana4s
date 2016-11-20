@@ -1,18 +1,11 @@
 package com.yukimt.katakana
 
 import dictionary.Dictionary
-import tokenizer.Tokenizer
-import alphabet.AlphabetConverter
+import tokenizer.{Tokenizer, Kuromoji}
+import alphabet.{AlphabetConverter, Roman}
 import ConverterImplicits._
-/**
- * convert any string into Katakana by using "convert" method
- * (insert space between each term)
- * e.g. "昨日I am Legendという映画を観た" will be
- * "キノウ アイ アム レジェンド トイウ エイガ ヲ ミタ"
- *
- * if you do not want to use dictionary to convert strings, leave "dic" None
- */
-class Converter(tokenizer: Tokenizer, alpha: AlphabetConverter, dic: Option[Dictionary] = None){
+
+class Converter(tokenizer: Tokenizer = Kuromoji, alpha: AlphabetConverter = Roman){
   //reading dicrionary information
   dic.foreach(_.setup)
 
