@@ -42,7 +42,7 @@ class ConverterSpec extends Specification with Mockito{
       val readings = Seq("オオ", "super", "hyper", "アア", "ホゲ")
       val conversions = Seq("あ", "スーパー", "ハイパー", "イェイ", "お")
       con.combineReadings(readings, conversions, ConversionMode.Space) === "オオ スーパー ハイパー イェイ ホゲ"
-      con.combineReadings(readings, conversions, ConversionMode.EnglishNoSpace) === "オオ スーパーハイパー イェイ ホゲ"
+      con.combineReadings(readings, conversions, ConversionMode.AlphabetNoSpace) === "オオ スーパーハイパー イェイ ホゲ"
       con.combineReadings(readings, conversions, ConversionMode.NoSpace) === "オオスーパーハイパーイェイホゲ"
     }
 
@@ -54,7 +54,7 @@ class ConverterSpec extends Specification with Mockito{
       res === "ホントウ フットボール サイコウ"
       
       con.convert("", ConversionMode.NoSpace) === "ホントウフットボールサイコウ"
-      con.convert("", ConversionMode.EnglishNoSpace) === "ホントウ フットボール サイコウ"
+      con.convert("", ConversionMode.AlphabetNoSpace) === "ホントウ フットボール サイコウ"
     }
   }
 }

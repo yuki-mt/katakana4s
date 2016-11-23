@@ -41,7 +41,7 @@ class Converter(tokenizer: Tokenizer = Kuromoji, alpha: AlphabetConverter = Roma
     mode match {
       case ConversionMode.Space =>
         if(acc.isEmpty) reading else acc + ' ' + reading
-      case ConversionMode.EnglishNoSpace =>
+      case ConversionMode.AlphabetNoSpace =>
         if(readingToken.head.isAlphabet)
           acc + reading
         else{
