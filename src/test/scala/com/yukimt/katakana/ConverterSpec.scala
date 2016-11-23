@@ -3,50 +3,42 @@ package com.yukimt.katakana
 import org.specs2.mutable.Specification
 import org.specs2.mock.Mockito
 import org.mockito.Mockito._
-import dictionary.Dictionary
 import tokenizer._
 import alphabet.{AlphabetConverter, Sound}
 
 class ConverterSpec extends Specification with Mockito{
   var tok = mock[Tokenizer]
   var a = mock[AlphabetConverter]
-  var d = mock[Dictionary]
   
-  def getConverter(hasDictionary: Boolean) = {
+  def getConverter = {
     tok = mock[Tokenizer]
     a = mock[AlphabetConverter]
-    d = mock[Dictionary]
     tok.tokenize(any[String]) returns {
-      Seq(Token("本当", "ホントウ"), Token("football", "football"), Token("is", "is"), Token("最高", "サイコウ"))
+      Seq(Token("本当", "ホントウ"), Token("football", "football"), Token("最高", "サイコウ"))
     }
-    d.convert("本当") returns "マジデ"
-    d.convert("football") returns "footボール"
-    d.convert("is") returns "イズ"
-    d.convert("最高") returns "最高"
     a.decompose(any[String]) returns Array.empty[Sound]
-    a.convert(any[Seq[Sound]]) returns "フット"
+    a.convert(any[Seq[Sound]]) returns "フットボール"
 
-    if(hasDictionary) new TestConverter(tok, a, Some(d))
-    else new TestConverter(tok, a, None)
+    new TestConverter(tok, a)
   }
 
   sequential
   "Converter" should {
     "insert camel space" in {
-      val con = getConverter(true)
+      val con = getConverter
       con.insertCamelSpace("AppStoreYeahとまとABDほげhogehoge") === "App Store YeahとまとABDほげhogehoge"
     }
 
     "convert alphabet" in {
-      val con = getConverter(true)
+      val con = getConverter
       val res = con.convertAlphabet("hogeほげfugaふが")
       verify(a, times(1)).decompose("hoge")
       verify(a, times(1)).decompose("fuga")
-      res === "フットほげフットふが"
+      res === "フットボールほげフットボールふが"
     }
 
     "comobine readings" in {
-      val con = getConverter(true)
+      val con = getConverter
       val readings = Seq("オオ", "super", "hyper", "アア", "ホゲ")
       val conversions = Seq("あ", "スーパー", "ハイパー", "イェイ", "お")
       con.combineReadings(readings, conversions, ConversionMode.Space) === "オオ スーパー ハイパー イェイ ホゲ"
@@ -55,23 +47,19 @@ class ConverterSpec extends Specification with Mockito{
     }
 
     "convert" in {
-      val con = getConverter(true)
+      val con = getConverter
       val res = con.convert("ABC NewStoreで買い物")
       verify(tok, times(1)).tokenize("ABC New Storeで買い物")
-      verify(d, times(1)).convert("本当")
-      verify(d, times(1)).convert("football")
-      verify(d, times(1)).convert("is")
-      verify(d, times(1)).convert("最高")
-      verify(a, times(1)).decompose("foot")
-      res === "マジデ フットボール イズ サイコウ"
+      verify(a, times(1)).decompose("football")
+      res === "ホントウ フットボール サイコウ"
       
-      con.convert("", ConversionMode.NoSpace) === "マジデフットボールイズサイコウ"
-      con.convert("", ConversionMode.EnglishNoSpace) === "マジデ フットボールイズ サイコウ"
+      con.convert("", ConversionMode.NoSpace) === "ホントウフットボールサイコウ"
+      con.convert("", ConversionMode.EnglishNoSpace) === "ホントウ フットボール サイコウ"
     }
   }
 }
 
-class TestConverter(tokenizer: Tokenizer, alpha: AlphabetConverter, dic: Option[Dictionary] = None) extends Converter(tokenizer, alpha, dic){
+class TestConverter(tokenizer: Tokenizer, alpha: AlphabetConverter) extends Converter(tokenizer, alpha){
   override def insertCamelSpace(str: String) = super.insertCamelSpace(str)
   override def convertAlphabet(word: String) = super.convertAlphabet(word)
   override def combineReadings(r: Seq[String], c: Seq[String], m: ConversionMode) = super.combineReadings(r, c, m)

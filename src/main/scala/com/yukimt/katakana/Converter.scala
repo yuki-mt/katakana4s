@@ -1,23 +1,16 @@
 package com.yukimt.katakana
 
-import dictionary.Dictionary
 import tokenizer.{Tokenizer, Kuromoji}
 import alphabet.{AlphabetConverter, Roman}
 import ConverterImplicits._
 
-class Converter(tokenizer: Tokenizer = Kuromoji, alpha: AlphabetConverter = Roman){
-  //reading dicrionary information
-  dic.foreach(_.setup)
-
+class Converter(tokenizer: Tokenizer = Kuromoji, alpha: AlphabetConverter = Roman()){
   def convert(str: String, mode: ConversionMode = ConversionMode.Space) = {
     val tokens = tokenizer.tokenize(insertCamelSpace(str))
 
     val conversions = tokens.map{t =>
-      //convert by using dictionary information
-      val dicWord = dic.map(_.convert(t.term)).getOrElse(t.term)
-
       //convert by using alpha
-      convertAlphabet(dicWord)
+      convertAlphabet(t.term)
     }
 
     combineReadings(tokens.map(_.reading), conversions, mode)
