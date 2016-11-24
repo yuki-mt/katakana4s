@@ -3,8 +3,9 @@
 (英語 -> カタカナの変換もいつか・・)
 
 # 導入方法
+in /build.sbt
 
-```build.sbt
+```
 resolvers += "katakana4s" at "https://yuki-mt.github.io/katakana4s"
 libraryDependencies += "com.yukimt" % "katakana4s_2.11" % "1.0"
 ```
