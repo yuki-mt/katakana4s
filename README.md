@@ -1,8 +1,8 @@
-# 何か
-ひらがな、漢字、ローマ字をカタカナに変換するScala製ライブラリ
+# katakana4s: ひらがな、漢字、ローマ字をカタカナに変換するScala製ライブラリ
+
 (英語 -> カタカナの変換もいつか・・)
 
-# 導入方法
+## 導入方法
 in /build.sbt
 
 ```
@@ -10,7 +10,7 @@ resolvers += "katakana4s" at "https://yuki-mt.github.io/katakana4s"
 libraryDependencies += "com.yukimt" % "katakana4s_2.11" % "1.0"
 ```
 
-# 使い方
+## 使い方
 
 ```
 import com.yukimt.katakana.{Converter, ConversionMode}
@@ -22,3 +22,10 @@ object Boot extends App {
   println(con.convert("昨日sushi wo ippaiを食べた！", ConversionMode.NoSpace)) // output "キノウスシヲイッパイタベタ　！"
 }
 ```
+
+## Contributing
+Always welcome for your contribution
+
+## License & Authors
+Author:: @yuki-mt
+License:: MIT
